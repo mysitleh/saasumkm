@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "sqlite"
+}
+model Tenant {
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  description  String?
+  logoUrl      String?
+  address      String?
+  phone        String?
+  qrisImageUrl String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  users      User[]
+  products   Product[]
+  orders     Order[]
+  categories Category[]
+  promos     Promo[]
+  @@map("tenants")
+}
+model User {
+  id        String   @id @default(cuid())
+  tenantId  String?
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("CUSTOMER")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tenant    Tenant?    @relation(fields: [tenantId], references: [id])
+  orders    Order[]
+  auditLogs AuditLog[]
+  @@map("users")
+}
+model Category {
+  id        String    @id @default(cuid())
+  tenantId  String
+  name      String
+  createdAt DateTime  @default(now())
+  tenant   Tenant    @relation(fields: [tenantId], references: [id])
+  products Product[]
+  @@map("categories")
+}
+model Product {
+  id          String   @id @default(cuid())
+  tenantId    String
+  categoryId  String?
+  name        String
+  description String?
+  price       Int
+  stock       Int      @default(0)
+  imageUrl    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tenant     Tenant      @relation(fields: [tenantId], references: [id])
+  category   Category?   @relation(fields: [categoryId], references: [id])
+  orderItems OrderItem[]
+  @@map("products")
+}
+model Promo {
+  id          String    @id @default(cuid())
+  tenantId    String
+  code        String
+  type        String
+  value       Int
+  minOrder    Int       @default(0)
+  maxDiscount Int?
+  isActive    Boolean   @default(true)
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  tenant Tenant  @relation(fields: [tenantId], references: [id])
+  orders Order[]
+  @@unique([tenantId, code])
+  @@map("promos")
+}
+model Order {
+  id              String    @id @default(cuid())
+  tenantId        String
+  userId          String?
+  promoId         String?
+  orderNumber     String    @unique
+  customerName    String
+  customerPhone   String?
+  customerNote    String?
+  deliveryType    String    @default("PICKUP")
+  deliveryAddress String?
+  subtotal        Int
+  discountAmount  Int       @default(0)
+  total           Int
+  status          String    @default("WAITING_PAYMENT")
+  paymentMethod   String    @default("QRIS_STATIC")
+  paymentProof    String?
+  paidAt          DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  tenant Tenant      @relation(fields: [tenantId], references: [id])
+  user   User?       @relation(fields: [userId], references: [id])
+  promo  Promo?      @relation(fields: [promoId], references: [id])
+  items  OrderItem[]
+  @@map("orders")
+}
+model OrderItem {
+  id        String @id @default(cuid())
+  orderId   String
+  productId String
+  name      String
+  price     Int
+  quantity  Int
+  subtotal  Int
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+  @@map("order_items")
+}
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String?
+  entityId  String?
+  meta      String?
+  createdAt DateTime @default(now())
+  user User? @relation(fields: [userId], references: [id])
+  @@map("audit_logs")
+}
