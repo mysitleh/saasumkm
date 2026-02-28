@@ -407,6 +407,7 @@ DATABASE_URL="libsql://your-db.turso.io?authToken=your-token" npx prisma migrate
 
 | Dokumen | Deskripsi |
 |---------|-----------|
+| [`DEVELOPMENT.md`](DEVELOPMENT.md) | **🔧 Panduan pengembangan lanjutan (robust)** |
 | [`docs/blueprint.md`](docs/blueprint.md) | Arsitektur sistem & modul |
 | [`docs/prisma-schema.md`](docs/prisma-schema.md) | Detail schema database |
 | [`docs/ui-flow.md`](docs/ui-flow.md) | Alur UI customer & owner |
