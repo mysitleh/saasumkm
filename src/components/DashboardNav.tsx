@@ -21,6 +21,8 @@ import {
   DotsThree,
   X,
   Sparkle,
+  Palette,
+  Globe,
   type Icon,
 } from "@phosphor-icons/react";
 import { UStoreMark } from "@/components/icons";
@@ -90,6 +92,14 @@ const NAV_GROUPS: NavGroup[] = [
       { href: "/dashboard/staff", label: "Staff", icon: IdentificationBadge, roles: ["OWNER"] },
       { href: "/dashboard/billing", label: "Billing", icon: CreditCard, roles: ["OWNER"] },
       { href: "/dashboard/settings", label: "Pengaturan", icon: GearSix, roles: ["OWNER"] },
+    ],
+  },
+  {
+    label: "Branding",
+    glyph: GLYPH.diamond,
+    items: [
+      { href: "/dashboard/theme", label: "Theme Builder", icon: Palette, roles: ["OWNER"] },
+      { href: "/dashboard/domain", label: "Custom Domain", icon: Globe, roles: ["OWNER"] },
     ],
   },
 ];

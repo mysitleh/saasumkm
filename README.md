@@ -56,6 +56,10 @@ Platform SaaS multi-tenant: bangun storefront, terima order via QRIS, jalankan P
 |:---:|:---:|:---:|
 | ![Pricing tier with aloe-featured Pro](tests/screenshots/desktop-auth/23-dashboard-billing.png) | ![Settings + theme picker](tests/screenshots/desktop-auth/24-dashboard-settings.png) | ![POS full-screen](tests/screenshots/desktop-auth/25-dashboard-pos.png) |
 
+| Theme Builder | Custom Domain | |
+|:---:|:---:|:---:|
+| ![Theme Builder GUI dengan live preview](tests/screenshots/desktop-auth/26-dashboard-theme-builder.png) | ![Custom Domain dengan DNS instructions](tests/screenshots/desktop-auth/27-dashboard-custom-domain.png) | |
+
 ### Public storefront (1440 × 900)
 
 | Landing | Storefront / demo | Cart sheet |
@@ -94,8 +98,9 @@ Platform SaaS multi-tenant: bangun storefront, terima order via QRIS, jalankan P
 | WhatsApp broadcast + cron weekly report | ✅ |
 | Two-canvas design system (cinematic + transactional) | ✅ |
 | Robust Playwright screenshot workflow + storage-state auth | ✅ |
-| Real recurring billing (Midtrans Recurring / Xendit) | ⚠️ Mock |
-| Custom domain per tenant | ❌ |
+| Recurring billing real (Midtrans Recurring / Xendit) | ⚠️ Mock |
+| Custom domain per tenant | ✅ GUI + DNS verify |
+| Theme Builder per tenant | ✅ GUI + live preview |
 | Refund / partial fulfillment | ❌ |
 
 ---

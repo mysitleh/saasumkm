@@ -15,7 +15,23 @@ model Tenant {
   address      String?
   phone        String?
   qrisImageUrl String?
-  themeColor   String?  @default("green") // green | blue | purple | orange | rose | slate
+  themeColor   String?  @default("green") // legacy preset: green | blue | purple | orange | rose | slate
+
+  // ── Theme Builder (custom branding per tenant) ──────────────────
+  themeMode     String?   @default("light")    // light | dark | auto
+  themePrimary  String?                        // hex: solid CTA color (e.g. #10b981)
+  themeAccent   String?                        // hex: secondary accent
+  themeSurface  String?                        // hex: page background
+  themeInk      String?                        // hex: text color
+  themeRadius   Int?      @default(12)         // border-radius for cards 0..32px
+  themeFont     String?   @default("Inter")    // Inter | Plus Jakarta Sans | Manrope | Poppins | DM Sans
+
+  // ── Custom domain ────────────────────────────────────────────────
+  customDomain          String?  @unique
+  customDomainStatus    String?  @default("NONE")  // NONE | PENDING | VERIFIED | ACTIVE | FAILED
+  customDomainVerifyToken String?                   // TXT record value used to prove ownership
+  customDomainVerifiedAt DateTime?
+
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

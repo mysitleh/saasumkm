@@ -106,4 +106,18 @@ test.describe("dashboard", () => {
     await expect(page.locator("h1")).toContainText(/pos/i);
     await snap(page, shotPath(VP, 25, "dashboard-pos"), { fullPage: false });
   });
+
+  test("26 — Theme Builder", async ({ page }) => {
+    await safeGoto(page, "/dashboard/theme");
+    await expect(page.locator("h1")).toContainText(/theme builder/i);
+    // Wait for live preview SVG / first card to be visible
+    await page.locator(".card").first().waitFor({ state: "visible" });
+    await snap(page, shotPath(VP, 26, "dashboard-theme-builder"));
+  });
+
+  test("27 — Custom Domain", async ({ page }) => {
+    await safeGoto(page, "/dashboard/domain");
+    await expect(page.locator("h1")).toContainText(/domain/i);
+    await snap(page, shotPath(VP, 27, "dashboard-custom-domain"));
+  });
 });

@@ -7,6 +7,7 @@ import { getBaseUrl } from "@/lib/utils";
 import StoreJsonLd from "@/components/StoreJsonLd";
 import Link from "next/link";
 import { GLYPH } from "@/lib/glyphs";
+import { resolveTenantTheme, themeToCssVars } from "@/lib/theme-runtime";
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -28,9 +29,20 @@ export default async function StorefrontPage({ params }: Props) {
   if (!tenant || !tenant.isActive) notFound();
 
   const qrisDynamicEnabled = await hasFeature(tenant.id, "qrisDynamic");
+  const theme = resolveTenantTheme(tenant);
+  const themeVars = themeToCssVars(theme);
+  const isDark = theme.mode === "dark";
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--canvas-cream)", color: "var(--ink)" }}>
+    <div
+      className="min-h-screen"
+      style={{
+        ...themeVars,
+        background: isDark ? "#0a0a0a" : theme.surface,
+        color: isDark ? "#ffffff" : theme.ink,
+        fontFamily: `"${theme.font}", "Inter", system-ui, sans-serif`,
+      }}
+    >
       {/* Storefront header — canvas-cream, no gradient */}
       <header style={{ borderBottom: "1px solid var(--hairline-light)", background: "var(--canvas-light)" }}>
         <div className="max-w-2xl mx-auto px-5 py-6 flex items-center gap-4">
