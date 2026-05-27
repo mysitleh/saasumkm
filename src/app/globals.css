@@ -1,0 +1,916 @@
+@import "tailwindcss";
+
+/* ============================================================
+   UMKMStore — Design System v2 ("Shopifi-grade two-canvas")
+   Source: design.md
+   - Two canvas tracks: cinematic dark (#000) + transactional light (#fff/cream)
+   - Aloe (#c1fbd4) and Pistachio (#d4f9e0) — light track only
+   - Pill (9999px) is the only button shape
+   - Inter Variable @ thin weights (300–500) for display, 420–550 for UI
+   - OpenType `ss03` enabled globally
+   ============================================================ */
+
+:root {
+  /* ---- Canvas (surface) ---- */
+  --canvas-night: #000000;
+  --canvas-night-elevated: #0a0a0a;
+  --surface-elevated-dark: #1e2c31;
+  --canvas-light: #ffffff;
+  --canvas-cream: #fbfbf5;
+
+  /* ---- Hairlines / borders ---- */
+  --hairline-light: #e4e4e7;
+  --hairline-dark: #1e2c31;
+
+  /* ---- Shade ladder (neutral) ---- */
+  --shade-30: #d4d4d8;
+  --shade-40: #a1a1aa;
+  --shade-50: #71717a;
+  --shade-60: #52525b;
+  --shade-70: #3f3f46;
+
+  /* ---- Brand greens (light track only) ---- */
+  --aloe-10: #c1fbd4;
+  --pistachio-10: #d4f9e0;
+
+  /* ---- Cool muted link tones (dark track footer) ---- */
+  --link-cool-1: #9dabad;
+  --link-cool-2: #9797a2;
+  --link-cool-3: #bdbdca;
+  --link-mint: #99b3ad;
+
+  /* ---- Text ---- */
+  --ink: #000000;
+  --ink-muted: var(--shade-50);
+  --on-primary: #ffffff;
+  --primary: var(--ink);
+
+  /* ---- Tailwind-theme bridge (used by `bg-background` etc.) ---- */
+  --background: var(--canvas-cream);
+  --foreground: var(--ink);
+
+  /* ============================================================
+     LEGACY ALIASES — keep all existing components rendering
+     against the new palette without hand-editing every file.
+     ============================================================ */
+  --accent: var(--ink);            /* primary buttons go solid black per design.md */
+  --accent-dark: var(--ink);
+  --accent-light: var(--aloe-10);  /* "active state" tint becomes aloe */
+  --surface-cream: var(--canvas-cream);
+  --surface-deep: #f4f4f1;
+  --surface-store: var(--canvas-cream);
+  --surface-hero: var(--canvas-night);
+  --surface-noir: var(--canvas-night);
+  --border-warm: var(--hairline-light);
+  --burst: var(--aloe-10);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  --font-hero: var(--font-display), "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* design.md spacing tokens */
+  --spacing-xxs: 2px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-xxl: 32px;
+  --spacing-huge: 64px;
+}
+
+/* ============================================================
+   GLOBAL RESET — ss03 stylistic set everywhere
+   ============================================================ */
+html {
+  scroll-behavior: smooth;
+  /* Inter ss03 = single-story `g`, geometric numerals — brand signature */
+  font-feature-settings: "ss03" on, "cv11" on, "cv01" on;
+  /* Defensive: never let a rogue child cause horizontal page scroll. */
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 420;       /* design.md body-md */
+  font-variation-settings: "opsz" 16;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Scrollbar tidy-up */
+.overflow-x-auto::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar { display: none; }
+.overflow-x-auto, .overflow-y-auto {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ============================================================
+   TYPOGRAPHY — design.md hierarchy
+   ============================================================ */
+
+.display-xxl {
+  font-family: var(--font-display), "Inter", system-ui, sans-serif;
+  font-size: clamp(56px, 7.4vw, 96px);
+  font-weight: 330;
+  line-height: 1.0;
+  letter-spacing: 2.4px;
+  font-variation-settings: "opsz" 96;
+}
+.display-xl {
+  font-family: var(--font-display), "Inter", system-ui, sans-serif;
+  font-size: clamp(44px, 5.4vw, 70px);
+  font-weight: 330;
+  line-height: 1.0;
+  letter-spacing: 0;
+  font-variation-settings: "opsz" 72;
+}
+.display-lg {
+  font-family: var(--font-display), "Inter", system-ui, sans-serif;
+  font-size: clamp(36px, 4.2vw, 55px);
+  font-weight: 330;
+  line-height: 1.16;
+  letter-spacing: 0;
+  font-variation-settings: "opsz" 56;
+}
+.display-md {
+  font-family: var(--font-display), "Inter", system-ui, sans-serif;
+  font-size: clamp(32px, 3.6vw, 48px);
+  font-weight: 330;
+  line-height: 1.14;
+  letter-spacing: 0;
+  font-variation-settings: "opsz" 48;
+}
+.heading-xl {
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.28;
+  letter-spacing: 0.42px;
+}
+.heading-lg {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.14;
+  letter-spacing: 0.36px;
+}
+.heading-md {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.3px;
+}
+.heading-sm {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: 0.72px;
+}
+.body-lg { font-size: 18px; font-weight: 550; line-height: 1.56; }
+.body-md { font-size: 16px; font-weight: 420; line-height: 1.5; }
+.body-strong { font-size: 16px; font-weight: 550; line-height: 1.5; }
+.caption { font-size: 14px; font-weight: 500; line-height: 1.49; letter-spacing: 0.28px; }
+.micro   { font-size: 13px; font-weight: 500; line-height: 1.5; letter-spacing: -0.13px; }
+
+/* eyebrow — uppercase technical label that sits above display headings */
+.eyebrow-cap {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.72px;
+  text-transform: uppercase;
+  font-feature-settings: "ss03" on, "tnum" on;
+  color: var(--shade-50);
+}
+.eyebrow-cap.on-dark { color: var(--link-cool-3); }
+
+/* tabular numerics — for KPIs, prices, stock */
+.tabular { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" on, "ss03" on; }
+
+/* legacy display class compat */
+.display {
+  font-family: var(--font-display), "Inter", system-ui, sans-serif;
+  font-weight: 330;
+  letter-spacing: -0.01em;
+}
+.hero-title {
+  font-family: var(--font-display), "Inter", system-ui, sans-serif;
+  font-weight: 330;
+  letter-spacing: 1.2px;
+  line-height: 0.98;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   PILL BUTTONS (9999px) — the only button shape in the system
+   ============================================================ */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1;
+  padding: 12px 24px;
+  min-height: 44px;          /* WCAG AAA touch target */
+  letter-spacing: 0;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease, transform .15s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pill:active:not(:disabled) { transform: scale(0.98); }
+.pill:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.pill-primary {
+  background: var(--ink);
+  color: var(--on-primary);
+  border: 1px solid var(--ink);
+}
+.pill-primary:hover:not(:disabled) { background: var(--shade-70); border-color: var(--shade-70); }
+
+.pill-aloe {
+  background: var(--aloe-10);
+  color: var(--ink);
+  border: 1px solid var(--aloe-10);
+}
+.pill-aloe:hover:not(:disabled) { background: var(--pistachio-10); border-color: var(--pistachio-10); }
+
+.pill-outline-light {
+  background: var(--canvas-light);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+}
+.pill-outline-light:hover:not(:disabled) { background: var(--canvas-cream); }
+
+.pill-outline-dark {
+  background: transparent;
+  color: var(--on-primary);
+  border: 2px solid var(--on-primary);
+}
+.pill-outline-dark:hover:not(:disabled) { background: rgba(255,255,255,0.08); }
+
+.pill-ghost {
+  background: transparent;
+  color: var(--shade-60);
+  border: 1px solid transparent;
+}
+.pill-ghost:hover:not(:disabled) { background: var(--canvas-cream); color: var(--ink); }
+
+/* sm/lg sizing variants */
+.pill-sm  { font-size: 13px; padding: 8px 16px; min-height: 36px; }
+.pill-lg  { font-size: 17px; padding: 14px 28px; min-height: 50px; }
+
+/* ============================================================
+   PILL TAGS / CHIPS
+   ============================================================ */
+.tag-mint, .pill-tag-mint {
+  display: inline-flex;
+  align-items: center;
+  background: var(--aloe-10);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.72px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-feature-settings: "ss03" on;
+}
+.tag-shade, .pill-tag-shade {
+  display: inline-flex;
+  align-items: center;
+  background: var(--shade-30);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.72px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 9999px;
+}
+.tag-pistachio {
+  display: inline-flex;
+  align-items: center;
+  background: var(--pistachio-10);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.72px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 9999px;
+}
+
+/* generic badge primitive (legacy compat) */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  padding: 2.5px 8px;
+}
+
+/* ============================================================
+   CARDS — design.md geometry (12px radius + stacked tiny shadows)
+   ============================================================ */
+.card {
+  background: var(--canvas-light);
+  border: 1px solid var(--hairline-light);
+  border-radius: 12px;
+  padding: 24px;
+  /* Level 3 elevation — stacked tiny drop shadows for paper halo */
+  box-shadow:
+    0 8px 8px rgba(0,0,0,0.05),
+    0 4px 4px rgba(0,0,0,0.04),
+    0 2px 2px rgba(0,0,0,0.03),
+    0 0 0 1px rgba(0,0,0,0.02);
+}
+.card-flat {
+  background: var(--canvas-light);
+  border: 1px solid var(--hairline-light);
+  border-radius: 12px;
+}
+.card-pricing {
+  background: var(--canvas-light);
+  border: 1px solid var(--hairline-light);
+  border-radius: 12px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+}
+.card-pricing-featured {
+  background: var(--aloe-10);
+  border: 1px solid var(--aloe-10);
+  border-radius: 12px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+}
+.card-pistachio-band {
+  background: var(--pistachio-10);
+  color: var(--ink);
+  border-radius: 12px;
+  padding: 32px;
+}
+.card-feature-cinematic {
+  background: var(--canvas-night-elevated);
+  color: var(--on-primary);
+  border-radius: 12px;
+  /* Level 1 — subtle inset top sheen */
+  box-shadow:
+    0 1px 2px rgba(255,255,255,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.card-photo-frame {
+  background: var(--canvas-night);
+  border-radius: 20px;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* ============================================================
+   FORM INPUTS — design.md text-input
+   ============================================================ */
+.input {
+  display: block;
+  width: 100%;
+  background: var(--canvas-light);
+  color: var(--ink);
+  border: 1px solid var(--hairline-light);
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-size: 16px;
+  font-weight: 420;
+  line-height: 1.5;
+  min-height: 44px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+  font-feature-settings: "ss03" on;
+}
+.input::placeholder { color: var(--shade-40); }
+.input:focus {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.08);
+}
+.input-cream { background: var(--canvas-cream); }
+
+/* legacy `.eyebrow` (mono uppercase) — keep for backward-compat */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.6px;
+  color: var(--shade-50);
+}
+
+/* ============================================================
+   STATUS BADGES — design.md compliant (shade ladder + greens only)
+   Tailwind class shims — keeps existing `bg-yellow-100` etc. usage
+   visually consistent with the new system.
+   ============================================================ */
+/* Override Tailwind status colors with design-system tokens */
+.status-waiting    { background: var(--shade-30); color: var(--ink); }
+.status-paid       { background: var(--pistachio-10); color: var(--ink); }
+.status-processing { background: var(--aloe-10); color: var(--ink); }
+.status-completed  { background: var(--ink); color: var(--on-primary); }
+.status-cancelled  { background: var(--canvas-cream); color: var(--shade-50); text-decoration: line-through; border: 1px solid var(--hairline-light); }
+
+/* ============================================================
+   GLYPH (brand unicode marker)
+   ============================================================ */
+.glyph {
+  display: inline-block;
+  font-feature-settings: "ss03" on, "tnum" on;
+  font-weight: 400;
+  line-height: 1;
+}
+
+/* ============================================================
+   DASHED HAIRLINE DIVIDER (used in sections)
+   ============================================================ */
+.hairline { border: 0; border-top: 1px solid var(--hairline-light); margin: 0; }
+.hairline-dark { border: 0; border-top: 1px solid var(--hairline-dark); margin: 0; }
+
+/* ============================================================
+   FOCUS RINGS — keyboard accessibility
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* ============================================================
+   LAYOUT PRIMITIVES — added during the audit pass.
+   These are Tailwind v4 utility classes registered via @utility.
+   They replace ad-hoc inline `style={{ padding: ... }}` and
+   `fontSize: ...` overrides, giving us a single source of truth
+   for spacing rhythm + KPI sizing across all pages.
+   ============================================================ */
+
+/* ---- Page chrome (dashboard) --------------------------------
+   .page-shell sits inside the dashboard <main> which already has
+   left padding from the layout. The desktop sidebar is fixed so
+   we offset content with margin-left only, never width:100%
+   (which would push the box beyond viewport and cause horizontal
+   scroll on every dashboard page).
+*/
+.page-shell {
+  padding-bottom: 80px; /* safe-area for mobile bottom-nav */
+  min-width: 0;
+}
+@media (min-width: 768px) {
+  .page-shell {
+    margin-left: 224px;
+    padding-bottom: 24px;
+  }
+}
+/* On ultra-wide displays cap the content reading-width so KPI strips
+   don't stretch into illegible 400px-tall card heights. */
+@media (min-width: 1920px) {
+  .page-shell {
+    max-width: calc(1500px + 224px);
+  }
+}
+
+.page-header {
+  margin-bottom: 28px;
+}
+@media (min-width: 768px) { .page-header { margin-bottom: 36px; } }
+
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ---- KPI primitives -----------------------------------------
+   The big numbers on dashboard / insights / billing all want the
+   same visual treatment. Three named tiers — kpi-value (30px),
+   kpi-value-lg (40px price), kpi-value-xl (48px hero stat).
+   No more inline fontSize.
+*/
+.kpi-card {
+  background: var(--canvas-light);
+  border: 1px solid var(--hairline-light);
+  border-radius: 12px;
+  padding: 20px;
+  /* Level 3 paper halo */
+  box-shadow:
+    0 8px 8px rgba(0,0,0,0.05),
+    0 4px 4px rgba(0,0,0,0.04),
+    0 2px 2px rgba(0,0,0,0.03),
+    0 0 0 1px rgba(0,0,0,0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.kpi-card-ink {
+  background: var(--ink);
+  color: var(--on-primary);
+  border-color: var(--ink);
+}
+.kpi-card-aloe {
+  background: var(--aloe-10);
+  border-color: var(--aloe-10);
+}
+
+.kpi-eyebrow {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.72px;
+  text-transform: uppercase;
+  font-feature-settings: "ss03" on, "tnum" on;
+  color: var(--shade-50);
+}
+.kpi-card-ink .kpi-eyebrow { color: var(--link-cool-3); }
+
+.kpi-value {
+  font-family: var(--font-display), "Inter", system-ui, sans-serif;
+  /* Fluid scaling: 24px → 34px across the breakpoint stair, capped so it
+     never breaks "Rp 1.234.567" into two lines on a 4-up grid cell. */
+  font-size: clamp(24px, 2.0vw + 0.25rem, 34px);
+  font-weight: 330;
+  line-height: 1.05;
+  letter-spacing: 0;
+  font-variation-settings: "opsz" 36;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" on, "ss03" on;
+  min-width: 0;
+  white-space: nowrap;            /* never break Rupiah numbers across lines */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kpi-value-lg {
+  font-family: var(--font-display), "Inter", system-ui, sans-serif;
+  font-size: clamp(32px, 3.0vw + 0.4rem, 48px);
+  font-weight: 330;
+  line-height: 1.05;
+  font-variation-settings: "opsz" 48;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" on, "ss03" on;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.kpi-sub {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.13px;
+  font-feature-settings: "tnum" on, "ss03" on;
+  color: var(--shade-50);
+}
+.kpi-card-ink .kpi-sub { color: var(--link-cool-3); }
+
+/* ---- KPI grid: 2-up mobile → 4-up desktop -------------------- */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (min-width: 768px)  { .kpi-grid { gap: 16px; } }
+@media (min-width: 1024px) { .kpi-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1280px) { .kpi-grid { gap: 20px; } }
+
+.kpi-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 640px)  { .kpi-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; } }
+@media (min-width: 1280px) { .kpi-grid-3 { gap: 20px; } }
+
+/* ---- List card (card with header + zero internal padding) ----
+   Pattern used by Recent Orders / Top Products / Loyalty Members /
+   Customers list etc. Single primitive replaces 8+ duplicated
+   `<section className="card" style={{ padding: 0 }}>` blocks.
+*/
+.list-card {
+  background: var(--canvas-light);
+  border: 1px solid var(--hairline-light);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    0 8px 8px rgba(0,0,0,0.05),
+    0 4px 4px rgba(0,0,0,0.04),
+    0 2px 2px rgba(0,0,0,0.03);
+}
+.list-card-header {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--hairline-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+@media (min-width: 768px) { .list-card-header { padding: 20px 24px; } }
+
+.list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--hairline-light);
+}
+.list-row:first-child { border-top: none; }
+.list-row:hover { background: var(--canvas-cream); }
+@media (min-width: 768px) { .list-row { padding: 14px 24px; } }
+
+/* ---- Empty state -------------------------------------------- */
+.empty-state {
+  padding: 56px 20px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 420;
+  line-height: 1.5;
+  color: var(--shade-50);
+}
+.empty-state-glyph {
+  display: block;
+  font-size: 32px;
+  line-height: 1;
+  color: var(--shade-30);
+  margin-bottom: 12px;
+}
+
+/* ---- Status badge (single source for order statuses) -------- */
+.status-pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  font-feature-settings: "ss03" on;
+  white-space: nowrap;
+}
+.status-pill[data-status="WAITING_PAYMENT"] { background: var(--shade-30); color: var(--ink); }
+.status-pill[data-status="PAID_MANUAL"]     { background: var(--pistachio-10); color: var(--ink); }
+.status-pill[data-status="PROCESSING"]      { background: var(--aloe-10); color: var(--ink); }
+.status-pill[data-status="COMPLETED"]       { background: var(--ink); color: var(--on-primary); }
+.status-pill[data-status="CANCELLED"]       { background: var(--canvas-cream); color: var(--shade-50); border: 1px solid var(--hairline-light); }
+
+/* ---- Tab pill (status tabs / category tabs) ----------------- */
+.tab-pill {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--canvas-light);
+  color: var(--ink);
+  border: 1px solid var(--hairline-light);
+  white-space: nowrap;
+  font-feature-settings: "ss03" on;
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+.tab-pill:hover { background: var(--canvas-cream); }
+.tab-pill[data-active="true"],
+.tab-pill[aria-selected="true"] {
+  background: var(--ink);
+  color: var(--on-primary);
+  border-color: var(--ink);
+}
+.tab-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 16px;
+}
+
+/* ---- Marketing sections (light + cinematic) ---------------- */
+.section-marketing {
+  padding: 64px 20px;
+}
+@media (min-width: 768px) { .section-marketing { padding: 96px 32px; } }
+@media (min-width: 1280px) { .section-marketing { padding: 112px 48px; } }
+
+.section-cinematic {
+  background: var(--canvas-night);
+  color: var(--on-primary);
+  padding: 80px 20px;
+}
+@media (min-width: 768px) { .section-cinematic { padding: 112px 32px; } }
+@media (min-width: 1280px) { .section-cinematic { padding: 144px 48px; } }
+
+.container-md  { max-width: 720px;  margin-inline: auto; }
+.container-lg  { max-width: 1024px; margin-inline: auto; }
+.container-xl  { max-width: 1200px; margin-inline: auto; }
+.container-wide { max-width: 1440px; margin-inline: auto; }
+
+/* ---- Form helpers ------------------------------------------- */
+.field-group { display: flex; flex-direction: column; gap: 6px; }
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 640px) { .field-row { grid-template-columns: 1fr 1fr; } }
+
+/* ---- Reading column for long-form / form pages ------------- */
+.reading-col { max-width: 720px; margin-inline: auto; }
+.form-col { max-width: 480px; margin-inline: auto; }
+
+/* ---- Auth screen layout ------------------------------------ */
+.auth-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  background: var(--canvas-cream);
+}
+@media (min-width: 768px) { .auth-shell { padding: 48px 32px; } }
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--canvas-light);
+  border: 1px solid var(--hairline-light);
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow:
+    0 8px 8px rgba(0,0,0,0.05),
+    0 4px 4px rgba(0,0,0,0.04),
+    0 2px 2px rgba(0,0,0,0.03);
+}
+@media (min-width: 768px) { .auth-card { padding: 36px; } }
+
+/* ---- Toast / inline alert ---------------------------------- */
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--canvas-cream);
+  color: var(--ink);
+  border: 1px solid var(--hairline-light);
+  font-size: 14px;
+  line-height: 1.49;
+  font-weight: 500;
+  font-feature-settings: "ss03" on;
+}
+
+/* ---- Quick-action pill row --------------------------------- */
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+@media (min-width: 768px) { .quick-actions { gap: 10px; margin-bottom: 32px; } }
+
+/* ---- Anti-overflow: long inline numbers don't break grid --- */
+.kpi-card,
+.kpi-card-ink,
+.kpi-card-aloe { min-width: 0; }
+.kpi-card .kpi-value { min-width: 0; }
+
+
+/* ---- Compact KPI value (for nested 2-up grids inside cards) ----
+   Used on the Insights CLV mini-cards where the parent is already a
+   2-column grid, so the mini-cards hit ~140px wide on tablet. The
+   default .kpi-value (clamp 24→34) still wraps "Rp 1.234.567" there. */
+.kpi-value-sm {
+  font-family: var(--font-display), "Inter", system-ui, sans-serif;
+  font-size: clamp(20px, 1.6vw + 0.25rem, 28px);
+  font-weight: 330;
+  line-height: 1.1;
+  font-variation-settings: "opsz" 32;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" on, "ss03" on;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- KPI grid 2-up forced (Insights CLV split) ---------------- */
+.kpi-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* ---- Insights/dashboard 2-col block grid ----------------------
+   Used by Insights to lay out RFM ↔ CLV, Affinity ↔ Heatmap,
+   Cohort ↔ Churn. Stacks on mobile, 2-up from md, with consistent
+   gap that scales up on wide displays.
+*/
+.split-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 1024px) { .split-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; } }
+@media (min-width: 1440px) { .split-2 { gap: 24px; } }
+
+/* ---- Larger card-internal padding on wide displays ------------
+   The base .card has 24px padding. On ≥md we scale to 28px and on
+   ≥xl to 32px so wide cards don't feel under-padded next to a 36px
+   display headline.
+*/
+@media (min-width: 768px)  { .card, .kpi-card { padding: 28px; } }
+@media (min-width: 1280px) { .card, .kpi-card { padding: 32px; } }
+
+/* ---- Responsive section padding for marketing pages ------------ */
+@media (min-width: 1440px) {
+  .section-marketing { padding: 128px 56px; }
+  .section-cinematic { padding: 160px 56px; }
+}
+
+/* ---- Display-md responsive cap ---------------------------------
+   The current .display-md is `clamp(32px, 3.6vw, 48px)`. On ultra-
+   narrow widths (≤360px) the 32px floor still pushes off-screen
+   because "Halo, Budi." has long-glyph layout in NHGD-thin. Tighten:
+*/
+@media (max-width: 360px) {
+  .display-md { font-size: 28px; line-height: 1.18; }
+  .display-lg { font-size: 32px; }
+  .display-xl { font-size: 40px; }
+  .display-xxl { font-size: 44px; letter-spacing: 1.4px; }
+}
+
+
+/* ============================================================
+   OVERFLOW GUARDS — added during the responsive audit pass.
+   Anything inside a card/grid cell defaults to allowing the
+   parent grid to shrink. Without this, long inline strings
+   (Rupiah, order numbers, Tailwind class names in code blocks)
+   force ancestors past viewport and create horizontal scroll.
+   ============================================================ */
+.card,
+.list-card,
+.kpi-card,
+.card-pricing,
+.card-pricing-featured,
+.card-pistachio-band,
+.card-feature-cinematic { min-width: 0; max-width: 100%; }
+
+.list-row { min-width: 0; }
+.list-row > * { min-width: 0; }
+
+/* Long order numbers / SKUs */
+.tabular { word-break: normal; overflow-wrap: anywhere; }
+
+/* Image safety: never let a 4000px-wide CDN image push the layout */
+img { max-width: 100%; height: auto; }
+
+/* Tables inside cards must scroll within their own container */
+.list-card .overflow-x-auto,
+.card .overflow-x-auto { max-width: 100%; }
+
+/* Cinematic full-bleed safety: the canvas-night sections can have
+   container-wide children that exceed mobile width if their inner
+   padding pushes; constrain them. */
+.section-cinematic > *,
+.section-marketing > * { max-width: 100%; min-width: 0; }
+
+/* Sidebar — hide its scrollbar so it doesn't reserve extra width */
+aside[aria-label]::-webkit-scrollbar { width: 0; }
+aside[aria-label] { scrollbar-width: none; }
+
+/* Reduce horizontal section paddings on narrow phones so the
+   marketing tracks don't ask for 32px+32px = 64px outer padding
+   on a 360px viewport. */
+@media (max-width: 480px) {
+  .section-marketing { padding: 56px 16px; }
+  .section-cinematic { padding: 64px 16px; }
+}

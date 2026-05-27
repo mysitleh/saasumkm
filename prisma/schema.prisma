@@ -1,0 +1,285 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Tenant {
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  description  String?
+  logoUrl      String?
+  address      String?
+  phone        String?
+  qrisImageUrl String?
+  themeColor   String?  @default("green") // green | blue | purple | orange | rose | slate
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  users        User[]
+  products     Product[]
+  orders       Order[]
+  categories   Category[]
+  promos       Promo[]
+  payments     Payment[]
+  subscription Subscription?
+  outlets      Outlet[]
+  loyaltyCards LoyaltyCard[]
+
+  @@map("tenants")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  tenantId  String?
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("CUSTOMER")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant    Tenant?    @relation(fields: [tenantId], references: [id])
+  orders    Order[]
+  auditLogs AuditLog[]
+
+  @@index([tenantId])
+  @@map("users")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  tenantId  String
+  name      String
+  createdAt DateTime @default(now())
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id])
+  products Product[]
+
+  @@index([tenantId])
+  @@map("categories")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  tenantId    String
+  categoryId  String?
+  name        String
+  description String?
+  price       Int
+  stock       Int      @default(0)
+  imageUrl    String?
+  variants    String?  // JSON: [{"name":"Ukuran","options":[{"label":"Small","priceAdd":0},{"label":"Large","priceAdd":5000}]}]
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant     Tenant      @relation(fields: [tenantId], references: [id])
+  category   Category?   @relation(fields: [categoryId], references: [id])
+  orderItems OrderItem[]
+
+  @@index([tenantId, isActive])
+  @@index([categoryId])
+  @@map("products")
+}
+
+model Promo {
+  id          String    @id @default(cuid())
+  tenantId    String
+  code        String
+  type        String
+  value       Int
+  minOrder    Int       @default(0)
+  maxDiscount Int?
+  isActive    Boolean   @default(true)
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  tenant Tenant  @relation(fields: [tenantId], references: [id])
+  orders Order[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId, isActive])
+  @@map("promos")
+}
+
+model Order {
+  id              String    @id @default(cuid())
+  tenantId        String
+  userId          String?
+  promoId         String?
+  orderNumber     String    @unique
+  customerName    String
+  customerPhone   String?
+  customerNote    String?
+  deliveryType    String    @default("PICKUP")
+  deliveryAddress String?
+  subtotal        Int
+  discountAmount  Int       @default(0)
+  total           Int
+  status          String    @default("WAITING_PAYMENT")
+  paymentMethod   String    @default("QRIS_STATIC")
+  paymentProof    String?
+  paidAt          DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  tenant   Tenant      @relation(fields: [tenantId], references: [id])
+  user     User?       @relation(fields: [userId], references: [id])
+  promo    Promo?      @relation(fields: [promoId], references: [id])
+  items    OrderItem[]
+  payments Payment[]
+
+  @@index([tenantId, status])
+  @@index([tenantId, createdAt])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String @id @default(cuid())
+  orderId   String
+  productId String
+  name      String
+  price     Int
+  quantity  Int
+  subtotal  Int
+
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+model Payment {
+  id              String    @id @default(cuid())
+  tenantId        String
+  orderId         String
+  provider        String // mock | midtrans | xendit
+  providerRef     String? // transaction id dari gateway
+  amount          Int
+  currency        String    @default("IDR")
+  method          String    @default("QRIS")
+  status          String    @default("PENDING") // PENDING | PAID | FAILED | EXPIRED
+  qrCodeUrl       String?
+  qrPayload       String?
+  expiresAt       DateTime?
+  paidAt          DateTime?
+  rawResponse     String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  order  Order  @relation(fields: [orderId], references: [id])
+
+  @@unique([provider, providerRef])
+  @@index([orderId])
+  @@index([tenantId, status])
+  @@map("payments")
+}
+
+model Subscription {
+  id                 String    @id @default(cuid())
+  tenantId           String    @unique
+  plan               String    @default("BASIC") // BASIC | PRO | BUSINESS
+  status             String    @default("ACTIVE") // ACTIVE | TRIAL | EXPIRED | CANCELLED
+  trialEndsAt        DateTime?
+  currentPeriodStart DateTime  @default(now())
+  currentPeriodEnd   DateTime
+  cancelledAt        DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@index([status, currentPeriodEnd])
+  @@map("subscriptions")
+}
+
+model WebhookEvent {
+  id          String   @id @default(cuid())
+  provider    String
+  eventId     String
+  signature   String?
+  payload     String
+  processedAt DateTime?
+  status      String   @default("RECEIVED") // RECEIVED | PROCESSED | FAILED
+  error       String?
+  createdAt   DateTime @default(now())
+
+  @@unique([provider, eventId])
+  @@index([status])
+  @@map("webhook_events")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  tenantId  String?
+  action    String
+  entity    String?
+  entityId  String?
+  meta      String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([tenantId, createdAt])
+  @@index([action])
+  @@map("audit_logs")
+}
+
+model Outlet {
+  id        String   @id @default(cuid())
+  tenantId  String
+  name      String
+  address   String?
+  phone     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+  @@map("outlets")
+}
+
+model LoyaltyCard {
+  id             String   @id @default(cuid())
+  tenantId       String
+  customerPhone  String
+  customerName   String
+  points         Int      @default(0)
+  totalSpent     Int      @default(0)
+  totalOrders    Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant      Tenant             @relation(fields: [tenantId], references: [id])
+  pointLogs   LoyaltyPointLog[]
+
+  @@unique([tenantId, customerPhone])
+  @@index([tenantId])
+  @@map("loyalty_cards")
+}
+
+model LoyaltyPointLog {
+  id        String   @id @default(cuid())
+  cardId    String
+  type      String   // EARN | REDEEM
+  points    Int
+  reason    String?  // "Order ORD-xxx" | "Redeem voucher"
+  createdAt DateTime @default(now())
+
+  card LoyaltyCard @relation(fields: [cardId], references: [id])
+
+  @@index([cardId])
+  @@map("loyalty_point_logs")
+}
