@@ -52,6 +52,10 @@ dev.db-journal
 .env.local
 
 # Playwright output (binary heavy)
-tests/screenshots/
+tests/screenshots/*
+!tests/screenshots/desktop-public/
+!tests/screenshots/desktop-auth/
+!tests/screenshots/mobile/
+!tests/screenshots/cinematic-wide/
 tests/.playwright/
 tests/e2e/.auth/

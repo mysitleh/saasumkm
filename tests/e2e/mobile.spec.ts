@@ -13,7 +13,9 @@ const VP = "mobile";
 test.describe("mobile", () => {
   test("M01 — Landing", async ({ page }) => {
     await safeGoto(page, "/");
-    await snap(page, shotPath(VP, 1, "landing"));
+    // Capture above-the-fold + first scroll only — full-page produces a 1MB+
+    // image since the landing has 6 sections × ~600px each on mobile.
+    await snap(page, shotPath(VP, 1, "landing"), { fullPage: false });
   });
 
   test("M02 — Login", async ({ page }) => {
@@ -23,18 +25,19 @@ test.describe("mobile", () => {
 
   test("M03 — Storefront", async ({ page }) => {
     await safeGoto(page, "/store/demo");
-    await snap(page, shotPath(VP, 3, "storefront"));
+    // Cap to viewport — full-page on mobile produces 3MB+ scrolls.
+    await snap(page, shotPath(VP, 3, "storefront"), { fullPage: false });
   });
 
   test("M10 — Dashboard home (auth)", async ({ page }) => {
     await safeGoto(page, "/dashboard");
     await expect(page.locator("h1")).toContainText(/halo|selamat/i);
-    await snap(page, shotPath(VP, 10, "dashboard-home"));
+    await snap(page, shotPath(VP, 10, "dashboard-home"), { fullPage: false });
   });
 
   test("M11 — Insights (auth)", async ({ page }) => {
     await safeGoto(page, "/dashboard/insights");
-    await snap(page, shotPath(VP, 11, "dashboard-insights"));
+    await snap(page, shotPath(VP, 11, "dashboard-insights"), { fullPage: false });
   });
 
   test("M12 — Mobile bottom-nav 'More' drawer", async ({ page }) => {

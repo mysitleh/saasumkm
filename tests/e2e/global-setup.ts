@@ -2,14 +2,14 @@
  * Playwright global setup.
  *
  * Runs once before the test suite:
- *   1. Resets the test SQLite DB (fresh deterministic state).
+ *   1. (optional) Resets the test SQLite DB if PLAYWRIGHT_RESET_DB=1.
  *   2. Generates the Prisma client (idempotent).
- *   3. Applies all migrations.
- *   4. Seeds rich demo data via `prisma/seed-full.ts`.
- *   5. Captures an authenticated `storageState.json` for the OWNER user
+ *   3. Applies migrations + seeds rich demo data (only on reset).
+ *   4. Captures an authenticated `storageState.json` for the OWNER user
  *      so dashboard tests don't have to re-login each time.
  *
- * Designed to be safe to re-run; failures bubble up so CI surfaces them.
+ * The default is to reuse the existing dev.db so locally Playwright can
+ * just run against `npm run dev` without a 60-second build cycle.
  */
 
 import { execSync } from "node:child_process";
@@ -18,7 +18,9 @@ import path from "node:path";
 import { request, chromium, type FullConfig } from "@playwright/test";
 
 const root = path.resolve(__dirname, "..", "..");
-const testDb = path.join(root, "test.db");
+const RESET_DB = process.env.PLAYWRIGHT_RESET_DB === "1";
+const DB_FILE = RESET_DB ? "test.db" : "dev.db";
+const dbPath = path.join(root, DB_FILE);
 const storagePath = path.join(__dirname, ".auth", "owner.json");
 
 function run(cmd: string, env: Record<string, string> = {}) {
@@ -31,8 +33,6 @@ function run(cmd: string, env: Record<string, string> = {}) {
 }
 
 async function loginAndSaveSession(baseURL: string) {
-  // Drive the real NextAuth credentials flow with a headless browser, then
-  // export `storageState` so dashboard tests can skip the login screen.
   const browser = await chromium.launch();
   const ctx = await browser.newContext({ baseURL });
   const page = await ctx.newPage();
@@ -40,19 +40,19 @@ async function loginAndSaveSession(baseURL: string) {
   await page.fill('input[type="email"]', "owner@demo.com");
   await page.fill('input[type="password"]', "password123");
   await page.click('button[type="submit"]');
-  await page.waitForURL("**/dashboard", { timeout: 20_000 });
+  await page.waitForURL("**/dashboard", { timeout: 30_000 });
   await page.waitForLoadState("networkidle");
   mkdirSync(path.dirname(storagePath), { recursive: true });
   await ctx.storageState({ path: storagePath });
   await browser.close();
-  // Sanity: storage state must contain a NextAuth session cookie.
+
   const raw = readFileSync(storagePath, "utf8");
   if (!/next-auth\.session-token|authjs\.session-token/.test(raw)) {
     throw new Error("Failed to capture NextAuth session cookie. Login flow broken?");
   }
 }
 
-async function waitForServer(baseURL: string, timeoutMs = 60_000) {
+async function waitForServer(baseURL: string, timeoutMs = 90_000) {
   const ctx = await request.newContext({ baseURL });
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
@@ -72,34 +72,31 @@ async function waitForServer(baseURL: string, timeoutMs = 60_000) {
 }
 
 export default async function globalSetup(config: FullConfig) {
-  const baseURL = config.projects[0]?.use?.baseURL ?? "http://localhost:3100";
+  const baseURL = config.projects[0]?.use?.baseURL ?? "http://localhost:3000";
 
-  // ---- 1. Reset test database ---------------------------------------------
-  if (existsSync(testDb)) {
-    rmSync(testDb);
-    console.log("✓ Removed previous test.db");
+  if (RESET_DB) {
+    if (existsSync(dbPath)) {
+      rmSync(dbPath);
+      console.log(`✓ Removed previous ${DB_FILE}`);
+    }
+    const prismaEnv: Record<string, string> = { DATABASE_URL: `file:./${DB_FILE}` };
+    try {
+      run("npx prisma generate", prismaEnv);
+    } catch {
+      // generate also runs via postinstall
+    }
+    run("npx prisma migrate deploy", prismaEnv);
+    run("npx tsx prisma/seed-full.ts", prismaEnv);
+  } else {
+    console.log(`✓ Using existing ${DB_FILE} (set PLAYWRIGHT_RESET_DB=1 to reset)`);
   }
 
-  // ---- 2/3. Prisma generate + migrate -------------------------------------
-  const prismaEnv: Record<string, string> = { DATABASE_URL: "file:./test.db" };
-  try {
-    run("npx prisma generate", prismaEnv);
-  } catch {
-    // generate is also run via postinstall — non-fatal here.
-  }
-  run("npx prisma migrate deploy", prismaEnv);
-
-  // ---- 4. Seed --------------------------------------------------------------
-  run("npx tsx prisma/seed-full.ts", prismaEnv);
-
-  // ---- 5. Wait for server, then capture auth state ------------------------
   console.log(`Waiting for ${baseURL}/api/health...`);
   await waitForServer(baseURL);
 
   console.log("Capturing OWNER storage state...");
   await loginAndSaveSession(baseURL);
 
-  // Manifest written for downstream tools.
   writeFileSync(
     path.join(__dirname, ".auth", "manifest.json"),
     JSON.stringify({ baseURL, user: "owner@demo.com", capturedAt: new Date().toISOString() }, null, 2),

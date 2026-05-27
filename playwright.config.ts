@@ -13,7 +13,7 @@ import path from "node:path";
  *   - CI-friendly: html report, retries, traces+video on first retry, JSON output.
  */
 
-const PORT = process.env.PLAYWRIGHT_PORT ? Number(process.env.PLAYWRIGHT_PORT) : 3100;
+const PORT = process.env.PLAYWRIGHT_PORT ? Number(process.env.PLAYWRIGHT_PORT) : 3000;
 const baseURL = `http://localhost:${PORT}`;
 const STORAGE_STATE = path.join(__dirname, "tests", "e2e", ".auth", "owner.json");
 const SHOTS_DIR = "tests/screenshots";
@@ -71,12 +71,18 @@ export default defineConfig({
       },
     },
 
-    // ---- Mobile (390x844) ----
+    // ---- Mobile (iPhone 14 Pro viewport on chromium) ----
     {
       name: "mobile",
       testMatch: /mobile\.spec\.ts/,
       use: {
-        ...devices["iPhone 14 Pro"],
+        ...devices["Desktop Chrome"],
+        viewport: { width: 393, height: 852 },
+        deviceScaleFactor: 3,
+        isMobile: true,
+        hasTouch: true,
+        userAgent:
+          "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
         storageState: STORAGE_STATE,
       },
     },
@@ -101,14 +107,16 @@ export default defineConfig({
       : []),
   ],
 
-  webServer: {
-    command: `cmd /c "set NODE_ENV=production&& set DATABASE_URL=file:./test.db&& set NEXTAUTH_SECRET=test-secret-key-please-change-32chars-minimum&& set NEXTAUTH_URL=${baseURL}&& set PAYMENT_PROVIDER=mock&& npm run build && npx next start -p ${PORT}"`,
-    url: `${baseURL}/api/health`,
-    timeout: 240_000,
-    reuseExistingServer: !process.env.CI,
-    stdout: "pipe",
-    stderr: "pipe",
-  },
+  webServer: process.env.PLAYWRIGHT_NO_SERVER
+    ? undefined
+    : {
+        command: `cmd /c "set DATABASE_URL=file:./dev.db&& set NEXTAUTH_SECRET=dev-secret-key-please-change-32chars-minimum&& set NEXTAUTH_URL=${baseURL}&& set PAYMENT_PROVIDER=mock&& npm run dev -- -p ${PORT}"`,
+        url: `${baseURL}/api/health`,
+        timeout: 240_000,
+        reuseExistingServer: true,
+        stdout: "pipe",
+        stderr: "pipe",
+      },
 
   // helper exports
   metadata: {

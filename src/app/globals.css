@@ -484,6 +484,9 @@ body {
 .page-shell {
   padding-bottom: 80px; /* safe-area for mobile bottom-nav */
   min-width: 0;
+  /* On laptops 1024–1280px, the sidebar takes 224px so content has
+     ~720–960px usable. We give the right side a small breathing
+     gutter so the rightmost card edge doesn't touch the viewport. */
 }
 @media (min-width: 768px) {
   .page-shell {
@@ -491,8 +494,6 @@ body {
     padding-bottom: 24px;
   }
 }
-/* On ultra-wide displays cap the content reading-width so KPI strips
-   don't stretch into illegible 400px-tall card heights. */
 @media (min-width: 1920px) {
   .page-shell {
     max-width: calc(1500px + 224px);
@@ -652,7 +653,7 @@ body {
 
 /* ---- Empty state -------------------------------------------- */
 .empty-state {
-  padding: 56px 20px;
+  padding: clamp(36px, 4vw + 0.5rem, 56px) 20px;
   text-align: center;
   font-size: 16px;
   font-weight: 420;
@@ -661,7 +662,7 @@ body {
 }
 .empty-state-glyph {
   display: block;
-  font-size: 32px;
+  font-size: clamp(24px, 2.4vw, 32px);
   line-height: 1;
   color: var(--shade-30);
   margin-bottom: 12px;

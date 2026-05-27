@@ -117,9 +117,9 @@ export default function DashboardNav({ session }: { session: Session }) {
       {/* Header — nav-bar-light */}
       <header
         className="sticky top-0 z-40"
-        style={{ background: "var(--canvas-light)", borderBottom: "1px solid var(--hairline-light)" }}
+        style={{ background: "var(--canvas-light)", borderBottom: "1px solid var(--hairline-light)", height: 56 }}
       >
-        <div className="flex items-center justify-between gap-3 px-4 py-3 md:px-6">
+        <div className="flex items-center justify-between gap-3 px-4 md:px-6 h-full">
           <div className="flex items-center gap-3 min-w-0">
             <UStoreMark size="sm" />
             <span className="hidden sm:inline" style={{ color: "var(--shade-30)" }}>|</span>
@@ -226,12 +226,16 @@ export default function DashboardNav({ session }: { session: Session }) {
                           key={item.href}
                           href={item.href}
                           onClick={() => setMoreOpen(false)}
-                          className="flex flex-col items-center gap-1.5 p-3 micro text-center min-w-0"
+                          className="flex flex-col items-center justify-center gap-1.5 micro text-center min-w-0"
                           style={{
+                            padding: "12px 6px",
                             background: active ? "var(--aloe-10)" : "transparent",
                             color: "var(--ink)",
                             border: active ? "1px solid var(--aloe-10)" : "1px solid var(--hairline-light)",
                             borderRadius: 12,
+                            minHeight: 72,
+                            fontSize: 11,
+                            lineHeight: 1.2,
                           }}
                         >
                           <ActiveIcon size={20} weight={active ? "fill" : "regular"} />
@@ -249,8 +253,11 @@ export default function DashboardNav({ session }: { session: Session }) {
 
       {/* Sidebar desktop — categorized with eyebrow group heads + spacers */}
       <aside
-        className="hidden md:flex fixed left-0 top-[57px] bottom-0 w-56 flex-col z-30 overflow-y-auto"
+        className="hidden md:flex fixed left-0 flex-col z-30 overflow-y-auto"
         style={{
+          top: 56,
+          bottom: 0,
+          width: 224,
           background: "var(--canvas-light)",
           borderRight: "1px solid var(--hairline-light)",
           padding: "20px 12px",

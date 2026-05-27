@@ -13,6 +13,7 @@ Platform SaaS multi-tenant: bangun storefront, terima order via QRIS, jalankan P
 
 ## Daftar Isi
 
+- [Preview](#preview)
 - [Highlights](#highlights)
 - [Fitur saat ini](#fitur-saat-ini)
 - [Business Intelligence](#business-intelligence)
@@ -31,7 +32,55 @@ Platform SaaS multi-tenant: bangun storefront, terima order via QRIS, jalankan P
 
 ---
 
-## Highlights
+## Preview
+
+### Cinematic landing (1600 × 1000)
+
+![Hero — display-xxl 96px @ weight 330 di canvas-night](tests/screenshots/cinematic-wide/01-hero-cinematic.png)
+
+### Authenticated dashboard (1440 × 900)
+
+| Dashboard home | Business Intelligence | Analytics |
+|:---:|:---:|:---:|
+| ![Dashboard home](tests/screenshots/desktop-auth/10-dashboard-home.png) | ![Insights — RFM, Holt forecast, cohort, market basket](tests/screenshots/desktop-auth/11-dashboard-insights.png) | ![Analytics 14-hari](tests/screenshots/desktop-auth/12-dashboard-analytics.png) |
+
+| Pesanan | Order detail | Produk |
+|:---:|:---:|:---:|
+| ![Pesanan dengan tab status](tests/screenshots/desktop-auth/13-dashboard-orders.png) | ![Order detail + print receipt](tests/screenshots/desktop-auth/14-dashboard-order-detail.png) | ![Produk list](tests/screenshots/desktop-auth/15-dashboard-products.png) |
+
+| Pelanggan | Loyalty | Promo |
+|:---:|:---:|:---:|
+| ![Pelanggan + WA broadcast](tests/screenshots/desktop-auth/19-dashboard-customers.png) | ![Loyalty leaderboard](tests/screenshots/desktop-auth/20-dashboard-loyalty.png) | ![Promo CRUD](tests/screenshots/desktop-auth/18-dashboard-promos.png) |
+
+| Billing | Settings | POS Cashier |
+|:---:|:---:|:---:|
+| ![Pricing tier with aloe-featured Pro](tests/screenshots/desktop-auth/23-dashboard-billing.png) | ![Settings + theme picker](tests/screenshots/desktop-auth/24-dashboard-settings.png) | ![POS full-screen](tests/screenshots/desktop-auth/25-dashboard-pos.png) |
+
+### Public storefront (1440 × 900)
+
+| Landing | Storefront / demo | Cart sheet |
+|:---:|:---:|:---:|
+| ![Landing two-canvas](tests/screenshots/desktop-public/01-landing.png) | ![Storefront /store/demo](tests/screenshots/desktop-public/04-storefront.png) | ![Cart drawer](tests/screenshots/desktop-public/05-storefront-cart.png) |
+
+| Login | Register | Order tracking |
+|:---:|:---:|:---:|
+| ![Login](tests/screenshots/desktop-public/02-login.png) | ![Register tenant baru](tests/screenshots/desktop-public/03-register.png) | ![Track order](tests/screenshots/desktop-public/06-track.png) |
+
+### Mobile (393 × 852)
+
+| Landing | Login | Storefront |
+|:---:|:---:|:---:|
+| ![Mobile landing](tests/screenshots/mobile/01-landing.png) | ![Mobile login](tests/screenshots/mobile/02-login.png) | ![Mobile storefront](tests/screenshots/mobile/03-storefront.png) |
+
+| Dashboard home | Insights (BI) | "More" drawer (categorized) |
+|:---:|:---:|:---:|
+| ![Mobile dashboard](tests/screenshots/mobile/10-dashboard-home.png) | ![Mobile insights](tests/screenshots/mobile/11-dashboard-insights.png) | ![Bottom-nav More drawer](tests/screenshots/mobile/12-dashboard-more-drawer.png) |
+
+> Generated with `npm run screenshots` (Playwright multi-project: `desktop-public`, `desktop-auth`, `mobile` 393×852, `cinematic-wide` 1600×1000). Total run time: ~55s for 31 captures.
+
+---
+
+
 
 | Kemampuan | Status |
 |---|---|
