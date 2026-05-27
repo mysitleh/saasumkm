@@ -120,4 +120,11 @@ test.describe("dashboard", () => {
     await expect(page.locator("h1")).toContainText(/domain/i);
     await snap(page, shotPath(VP, 27, "dashboard-custom-domain"));
   });
+
+  test("28 — Template Builder", async ({ page }) => {
+    await safeGoto(page, "/dashboard/template");
+    await expect(page.locator("h1")).toContainText(/storefront|template/i);
+    await page.locator(".card").first().waitFor({ state: "visible" });
+    await snap(page, shotPath(VP, 28, "dashboard-template-builder"));
+  });
 });

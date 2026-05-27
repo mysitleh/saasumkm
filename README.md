@@ -56,9 +56,9 @@ Platform SaaS multi-tenant: bangun storefront, terima order via QRIS, jalankan P
 |:---:|:---:|:---:|
 | ![Pricing tier with aloe-featured Pro](tests/screenshots/desktop-auth/23-dashboard-billing.png) | ![Settings + theme picker](tests/screenshots/desktop-auth/24-dashboard-settings.png) | ![POS full-screen](tests/screenshots/desktop-auth/25-dashboard-pos.png) |
 
-| Theme Builder | Custom Domain | |
+| Theme Builder | Custom Domain | Template Builder |
 |:---:|:---:|:---:|
-| ![Theme Builder GUI dengan live preview](tests/screenshots/desktop-auth/26-dashboard-theme-builder.png) | ![Custom Domain dengan DNS instructions](tests/screenshots/desktop-auth/27-dashboard-custom-domain.png) | |
+| ![Theme Builder GUI dengan live preview](tests/screenshots/desktop-auth/26-dashboard-theme-builder.png) | ![Custom Domain dengan DNS instructions](tests/screenshots/desktop-auth/27-dashboard-custom-domain.png) | ![Template Builder — layout, button, icon, hero, carousel](tests/screenshots/desktop-auth/28-dashboard-template-builder.png) |
 
 ### Public storefront (1440 × 900)
 
@@ -101,6 +101,7 @@ Platform SaaS multi-tenant: bangun storefront, terima order via QRIS, jalankan P
 | Recurring billing real (Midtrans Recurring / Xendit) | ⚠️ Mock |
 | Custom domain per tenant | ✅ GUI + DNS verify |
 | Theme Builder per tenant | ✅ GUI + live preview |
+| Template Builder (layout, button, icon, hero, carousel) | ✅ GUI + 4 layout templates |
 | Refund / partial fulfillment | ❌ |
 
 ---

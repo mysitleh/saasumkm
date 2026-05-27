@@ -28,9 +28,22 @@ model Tenant {
 
   // ── Custom domain ────────────────────────────────────────────────
   customDomain          String?  @unique
-  customDomainStatus    String?  @default("NONE")  // NONE | PENDING | VERIFIED | ACTIVE | FAILED
-  customDomainVerifyToken String?                   // TXT record value used to prove ownership
+  customDomainStatus    String?  @default("NONE")
+  customDomainVerifyToken String?
   customDomainVerifiedAt DateTime?
+
+  // ── Storefront Template Builder ─────────────────────────────────
+  layoutTemplate    String?  @default("classic")  // classic | magazine | minimal | showcase
+  buttonStyle       String?  @default("pill")     // pill | rounded | square | ghost
+  iconStyle         String?  @default("regular")  // regular | fill | duotone | thin | bold
+  categoryStyle     String?  @default("chips")    // chips | grid | tabs | sidebar
+  heroEnabled       Boolean? @default(true)
+  heroImageUrl      String?
+  heroHeadline      String?
+  heroSubheadline   String?
+  heroCtaLabel      String?
+  carouselEnabled   Boolean? @default(false)
+  carouselProductIds String?                       // JSON array of product IDs
 
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
