@@ -7,8 +7,6 @@ import { ArrowSquareOut } from "@phosphor-icons/react/dist/ssr";
 import { GLYPH } from "@/lib/glyphs";
 import OnboardingBanner from "@/components/OnboardingBanner";
 import KpiStrip, { type KpiItem } from "./KpiStrip";
-import MarqueeTicker from "@/components/MarqueeTicker";
-import { buildReminders } from "@/lib/reminders";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -56,7 +54,6 @@ export default async function DashboardPage() {
     prisma.tenant.findUnique({ where: { id: tenantId } }),
   ]);
 
-  const reminders = await buildReminders(tenantId);
 
   const onboardingSteps = [
     { label: "Profil toko", done: !!(tenant?.description || tenant?.address), href: "/dashboard/settings" },
@@ -128,10 +125,6 @@ export default async function DashboardPage() {
             </>
           )}
         </p>
-      </div>
-
-      <div className="mb-6">
-        <MarqueeTicker items={reminders.items} tag={reminders.hasAlert ? "Perlu Aksi" : "Info"} alert={reminders.hasAlert} />
       </div>
 
       <OnboardingBanner steps={onboardingSteps} />

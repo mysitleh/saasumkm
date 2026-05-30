@@ -36,20 +36,20 @@ export async function buildReminders(tenantId: string): Promise<RemindersResult>
 
   if (pendingCount > 0) {
     hasAlert = true;
-    items.push({ text: `${pendingCount} pesanan menunggu konfirmasi bayar`, glyph: GLYPH.circleRing, alert: true });
+    items.push({ text: `${pendingCount} pesanan menunggu konfirmasi bayar`, glyph: GLYPH.circleRing, alert: true, href: "/dashboard/orders?status=WAITING_PAYMENT" });
   }
   if (processingCount > 0) {
-    items.push({ text: `${processingCount} pesanan sedang diproses`, glyph: GLYPH.hexFilled });
+    items.push({ text: `${processingCount} pesanan sedang diproses`, glyph: GLYPH.hexFilled, href: "/dashboard/orders?status=PROCESSING" });
   }
   if (outOfStock > 0) {
     hasAlert = true;
-    items.push({ text: `${outOfStock} produk stok habis - segera restock`, glyph: GLYPH.diamond, alert: true });
+    items.push({ text: `${outOfStock} produk stok habis - segera restock`, glyph: GLYPH.diamond, alert: true, href: "/dashboard/products/stock" });
   }
   if (lowStock > 0) {
-    items.push({ text: `${lowStock} produk stok menipis (<= ${LOW_STOCK_THRESHOLD})`, glyph: GLYPH.qOne });
+    items.push({ text: `${lowStock} produk stok menipis (<= ${LOW_STOCK_THRESHOLD})`, glyph: GLYPH.qOne, href: "/dashboard/products/stock" });
   }
   if (todayOrders > 0) {
-    items.push({ text: `${todayOrders} pesanan masuk hari ini`, glyph: GLYPH.up });
+    items.push({ text: `${todayOrders} pesanan masuk hari ini`, glyph: GLYPH.up, href: "/dashboard/orders" });
   }
 
   // Trial countdown
@@ -57,9 +57,9 @@ export async function buildReminders(tenantId: string): Promise<RemindersResult>
     const daysLeft = Math.ceil((sub.trialEndsAt.getTime() - Date.now()) / (24 * 60 * 60_000));
     if (daysLeft <= 0) {
       hasAlert = true;
-      items.push({ text: "Trial Pro Anda sudah berakhir - upgrade untuk lanjut", glyph: GLYPH.premium, alert: true });
+      items.push({ text: "Trial Pro Anda sudah berakhir - upgrade untuk lanjut", glyph: GLYPH.premium, alert: true, href: "/dashboard/billing" });
     } else if (daysLeft <= 7) {
-      items.push({ text: `Trial Pro berakhir ${daysLeft} hari lagi`, glyph: GLYPH.premium, alert: daysLeft <= 3 });
+      items.push({ text: `Trial Pro berakhir ${daysLeft} hari lagi`, glyph: GLYPH.premium, alert: daysLeft <= 3, href: "/dashboard/billing" });
       if (daysLeft <= 3) hasAlert = true;
     }
   }
@@ -70,14 +70,14 @@ export async function buildReminders(tenantId: string): Promise<RemindersResult>
     const productCount = await prisma.product.count({ where: { tenantId } });
     const max = limits.maxProducts as number;
     if (productCount >= max * 0.8) {
-      items.push({ text: `Produk ${productCount}/${max} - mendekati batas paket ${plan}`, glyph: GLYPH.hex });
+      items.push({ text: `Produk ${productCount}/${max} - mendekati batas paket ${plan}`, glyph: GLYPH.hex, href: "/dashboard/billing" });
     }
   }
 
   // Friendly fallback so the ticker is never empty.
   if (items.length === 0) {
     items.push({ text: "Semua beres - tidak ada yang perlu ditindaklanjuti", glyph: GLYPH.done });
-    items.push({ text: "Tips: bagikan link toko Anda ke pelanggan via WhatsApp", glyph: GLYPH.sparkle });
+    items.push({ text: "Tips: bagikan link toko Anda ke pelanggan via WhatsApp", glyph: GLYPH.sparkle, href: "/dashboard/customers" });
   }
 
   return { items, hasAlert };

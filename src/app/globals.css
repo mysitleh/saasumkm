@@ -1047,45 +1047,64 @@ aside[aria-label] { scrollbar-width: none; }
 
 /* ============================================================
    MARQUEE TICKER — compact scrolling status/notification bar.
-   A thin pill-strip that sits under the dashboard header. Later
-   wired to real reminders (pending orders, low stock, trial).
-   Pure CSS infinite scroll, edge-faded, pauses on hover,
-   reduced-motion safe.
+   A thin pill-strip that sits under the dashboard header on
+   every page. Wired to real reminders (pending orders, low
+   stock, trial, capacity). Pure CSS infinite scroll, edge-faded,
+   pauses on hover, reduced-motion safe, deep-linkable items.
    ============================================================ */
 .ticker {
   display: flex;
   align-items: center;
-  gap: 10px;
-  height: 36px;
-  padding: 0 12px;
+  gap: 12px;
+  height: 40px;
+  padding: 0 6px 0 6px;
   border-radius: 9999px;
-  background: var(--canvas-light);
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.9));
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--hairline-light);
-  box-shadow: 0 2px 8px -4px rgba(0,0,0,0.08);
+  box-shadow: 0 6px 18px -10px rgba(108,76,241,0.25), 0 1px 0 rgba(255,255,255,0.6) inset;
   overflow: hidden;
 }
 .ticker-tag {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 7px;
   flex-shrink: 0;
-  height: 22px;
-  padding: 0 10px;
+  height: 28px;
+  padding: 0 14px;
   border-radius: 9999px;
   background: var(--iso-violet);
   color: #fff;
-  font-size: 10px;
+  font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.7px;
   text-transform: uppercase;
+  box-shadow: 0 4px 12px -4px rgba(108,76,241,0.55);
 }
-.ticker-tag.is-alert { background: #e11d48; }
+.ticker-tag.is-alert {
+  background: #e11d48;
+  box-shadow: 0 4px 12px -4px rgba(225,29,72,0.55);
+}
+.ticker-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow: 0 0 0 0 rgba(255,255,255,0.7);
+  animation: tickerPulse 2s ease-out infinite;
+}
+@keyframes tickerPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255,255,255,0.7); }
+  70%  { box-shadow: 0 0 0 6px rgba(255,255,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+}
 .ticker-viewport {
   flex: 1;
   min-width: 0;
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 92%, transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 94%, transparent 100%);
 }
 .ticker-track {
   display: inline-flex;
@@ -1103,16 +1122,30 @@ aside[aria-label] { scrollbar-width: none; }
   font-size: 13px;
   font-weight: 500;
   color: var(--shade-60);
-  padding-right: 0;
 }
 .ticker-item .glyph { color: var(--iso-violet); font-size: 12px; }
+.ticker-item.is-alert { color: var(--ink); }
 .ticker-item.is-alert .glyph { color: #e11d48; }
+.ticker-link {
+  text-decoration: none;
+  border-radius: 9999px;
+  transition: color .15s ease;
+}
+.ticker-link:hover { color: var(--iso-violet-deep); }
+.ticker-link.is-alert:hover { color: #e11d48; }
+.ticker-go {
+  font-size: 11px !important;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity .15s ease, transform .15s ease;
+}
+.ticker-link:hover .ticker-go { opacity: 1; transform: translateX(0); }
 .ticker-sep {
   display: inline-flex;
   align-items: center;
-  margin: 0 18px;
-  font-size: 8px;
-  color: var(--shade-30);
+  margin: 0 20px;
+  font-size: 7px !important;
+  color: var(--shade-30) !important;
 }
 
 @keyframes tickerScroll {
@@ -1122,6 +1155,7 @@ aside[aria-label] { scrollbar-width: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .ticker-track { animation: none !important; transform: none !important; }
+  .ticker-dot { animation: none !important; }
   .ticker-viewport {
     -webkit-mask-image: none;
     mask-image: none;
