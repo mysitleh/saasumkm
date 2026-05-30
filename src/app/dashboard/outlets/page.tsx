@@ -6,6 +6,7 @@ import { Storefront, MapPin, Phone } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { GLYPH } from "@/lib/glyphs";
 import OutletForm from "./OutletForm";
+import MarqueeHeading from "@/components/MarqueeHeading";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,7 @@ export default async function OutletsPage() {
       <div className="page-shell">
         <div className="page-header">
           <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.hexRing}</span> Outlet</p>
-          <h1 className="display-md">Multi outlet.</h1>
+          <MarqueeHeading text="Multi outlet" />
         </div>
         <div className="card text-center max-w-xl mx-auto" style={{ padding: 48 }}>
           <span className="empty-state-glyph glyph">{GLYPH.hexRing}</span>
@@ -45,7 +46,7 @@ export default async function OutletsPage() {
     <div className="page-shell">
       <div className="page-header">
         <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.hexRing}</span> Outlet</p>
-        <h1 className="display-md">Multi outlet.</h1>
+        <MarqueeHeading text="Multi outlet" />
         <p className="body-md mt-2 tabular" style={{ color: "var(--shade-50)" }}>
           Kelola cabang toko Anda <span className="glyph">·</span> {outlets.length}/5 outlet
         </p>

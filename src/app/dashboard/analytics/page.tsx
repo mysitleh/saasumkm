@@ -7,6 +7,7 @@ import Link from "next/link";
 import { hasFeature } from "@/lib/features";
 import { GLYPH } from "@/lib/glyphs";
 import StatTile from "@/components/StatTile";
+import MarqueeHeading from "@/components/MarqueeHeading";
 
 export const dynamic = "force-dynamic";
 
@@ -66,12 +67,10 @@ export default async function AnalyticsPage() {
 
   return (
     <div className="page-shell">
-      <div className="page-header flex items-end justify-between flex-wrap gap-3">
-        <div>
-          <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.diamond}</span> Analytics</p>
-          <h1 className="display-md">Performa 14 hari.</h1>
-        </div>
-        <div className="page-actions">
+      <div className="page-header">
+        <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.diamond}</span> Analytics</p>
+        <MarqueeHeading text="Performa 14 hari" />
+        <div className="page-actions mt-3">
           <Link href="/dashboard/insights" className="pill pill-aloe pill-sm">
             <span className="glyph">{GLYPH.sparkle}</span> Buka Insights
           </Link>

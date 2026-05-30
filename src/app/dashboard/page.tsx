@@ -7,6 +7,7 @@ import { ArrowSquareOut } from "@phosphor-icons/react/dist/ssr";
 import { GLYPH } from "@/lib/glyphs";
 import OnboardingBanner from "@/components/OnboardingBanner";
 import KpiStrip, { type KpiItem } from "./KpiStrip";
+import MarqueeHeading from "@/components/MarqueeHeading";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -106,7 +107,7 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className="page-header">
         <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.hexFilled}</span> Dashboard</p>
-        <h1 className="display-md">Halo, {session.user.name?.split(" ")[0]}.</h1>
+        <MarqueeHeading text={`Halo, ${session.user.name?.split(" ")[0] ?? "Juragan"}`} />
         <p className="body-md mt-2" style={{ color: "var(--shade-50)" }}>
           {tenant?.name}
           {tenant?.slug && (

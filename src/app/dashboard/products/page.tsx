@@ -8,6 +8,7 @@ import { GLYPH } from "@/lib/glyphs";
 import ProductToggle from "./ProductToggle";
 import ProductDelete from "./ProductDelete";
 import ImportProducts from "./ImportProducts";
+import MarqueeHeading from "@/components/MarqueeHeading";
 
 export default async function ProductsPage() {
   const session = await auth();
@@ -20,20 +21,20 @@ export default async function ProductsPage() {
 
   return (
     <div className="page-shell">
-      <div className="page-header flex items-end justify-between flex-wrap gap-3">
-        <div>
-          <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.hex}</span> Catalog</p>
-          <h1 className="display-md">Produk.</h1>
-          <p className="body-md mt-2 tabular" style={{ color: "var(--shade-50)" }}>{products.length} produk</p>
-        </div>
-        <div className="page-actions">
-          <Link href="/dashboard/products/stock" className="pill pill-outline-light pill-sm">
-            Update stok
-          </Link>
-          <ImportProducts />
-          <Link href="/dashboard/products/new" className="pill pill-primary pill-sm">
-            <Plus size={14} weight="bold" /> Tambah
-          </Link>
+      <div className="page-header">
+        <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.hex}</span> Catalog</p>
+        <MarqueeHeading text="Produk" />
+        <div className="flex items-end justify-between flex-wrap gap-3 mt-3">
+          <p className="body-md tabular" style={{ color: "var(--shade-50)" }}>{products.length} produk</p>
+          <div className="page-actions">
+            <Link href="/dashboard/products/stock" className="pill pill-outline-light pill-sm">
+              Update stok
+            </Link>
+            <ImportProducts />
+            <Link href="/dashboard/products/new" className="pill pill-primary pill-sm">
+              <Plus size={14} weight="bold" /> Tambah
+            </Link>
+          </div>
         </div>
       </div>
 

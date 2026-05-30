@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { GLYPH } from "@/lib/glyphs";
 import OrderSearch from "./OrderSearch";
+import MarqueeHeading from "@/components/MarqueeHeading";
 
 const STATUS_TABS = [
   { value: "", label: "Semua" },
@@ -63,7 +64,7 @@ export default async function OrdersPage({
     <div className="page-shell">
       <div className="page-header">
         <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.hexFilled}</span> Orders</p>
-        <h1 className="display-md">Pesanan.</h1>
+        <MarqueeHeading text="Pesanan" reverse />
         <p className="body-md mt-2 tabular" style={{ color: "var(--shade-50)" }}>{total} total pesanan</p>
       </div>
 

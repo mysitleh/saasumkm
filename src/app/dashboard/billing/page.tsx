@@ -5,6 +5,7 @@ import { PLAN_FEATURES, PLAN_LABELS, PLAN_PRICES, FEATURE_LABELS, BOOLEAN_FEATUR
 import { formatRupiah } from "@/lib/utils";
 import BillingActions from "./BillingActions";
 import { GLYPH } from "@/lib/glyphs";
+import MarqueeHeading from "@/components/MarqueeHeading";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +34,7 @@ export default async function BillingPage() {
     <div className="page-shell">
       <div className="page-header">
         <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.diamond}</span> Berlangganan</p>
-        <h1 className="display-md">Pilih paket Anda.</h1>
+        <MarqueeHeading text="Pilih paket Anda" reverse />
         <p className="body-md mt-2" style={{ color: "var(--shade-50)" }}>
           {isTrial && sub?.trialEndsAt
             ? `Trial Pro aktif sampai ${new Date(sub.trialEndsAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}.`

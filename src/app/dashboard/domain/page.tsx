@@ -5,6 +5,7 @@ import { GLYPH } from "@/lib/glyphs";
 import { hasFeature } from "@/lib/features";
 import FeatureGate from "@/components/FeatureGate";
 import DomainManager from "./DomainManager";
+import MarqueeHeading from "@/components/MarqueeHeading";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +42,7 @@ export default async function DomainPage() {
     <div className="page-shell reading-col">
       <div className="page-header">
         <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.hexRing}</span> Custom Domain</p>
-        <h1 className="display-md">Domain toko Anda.</h1>
+        <MarqueeHeading text="Domain toko Anda" />
         <p className="body-md mt-2" style={{ color: "var(--shade-50)" }}>
           Ganti URL <code style={{ fontFamily: "var(--font-mono)" }}>/store/{tenant.slug}</code> menjadi domain
           milik Anda sendiri (mis. <code style={{ fontFamily: "var(--font-mono)" }}>tokoanda.com</code>).

@@ -4,6 +4,7 @@ import { formatRupiah } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { GLYPH } from "@/lib/glyphs";
 import StatTile from "@/components/StatTile";
+import MarqueeHeading from "@/components/MarqueeHeading";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +27,7 @@ export default async function LoyaltyPage() {
     <div className="page-shell">
       <div className="page-header">
         <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.premium}</span> Loyalty</p>
-        <h1 className="display-md">Program poin pelanggan.</h1>
+        <MarqueeHeading text="Program poin pelanggan" />
         <p className="body-md mt-2" style={{ color: "var(--shade-50)" }}>
           Pelanggan mendapat 1 poin setiap belanja Rp 10.000.
         </p>

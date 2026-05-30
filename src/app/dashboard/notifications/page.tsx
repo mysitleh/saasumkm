@@ -5,6 +5,7 @@ import { GLYPH } from "@/lib/glyphs";
 import { hasFeature } from "@/lib/features";
 import FeatureGate from "@/components/FeatureGate";
 import NotificationSettings from "./NotificationSettings";
+import MarqueeHeading from "@/components/MarqueeHeading";
 
 export const dynamic = "force-dynamic";
 
@@ -43,7 +44,7 @@ export default async function NotificationsPage() {
     <div className="page-shell reading-col">
       <div className="page-header">
         <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.circleRing}</span> Notifikasi</p>
-        <h1 className="display-md">Laporan harian otomatis.</h1>
+        <MarqueeHeading text="Laporan harian otomatis" reverse />
         <p className="body-md mt-2" style={{ color: "var(--shade-50)" }}>
           Atur ke mana laporan harian dikirim — WhatsApp, Telegram, atau keduanya. Lengkap dengan breakdown per outlet.
         </p>

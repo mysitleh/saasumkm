@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { resolveTenantTheme } from "@/lib/theme-runtime";
 import { GLYPH } from "@/lib/glyphs";
 import ThemeBuilder from "./ThemeBuilder";
+import MarqueeHeading from "@/components/MarqueeHeading";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +37,7 @@ export default async function ThemePage() {
     <div className="page-shell">
       <div className="page-header">
         <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.sparkle}</span> Brand</p>
-        <h1 className="display-md">Theme Builder.</h1>
+        <MarqueeHeading text="Theme Builder" />
         <p className="body-md mt-2" style={{ color: "var(--shade-50)" }}>
           Atur warna, font, dan rounded corner toko Anda. Live preview ada di kanan.
         </p>

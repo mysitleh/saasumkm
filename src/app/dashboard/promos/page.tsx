@@ -6,6 +6,7 @@ import { Plus } from "@phosphor-icons/react/dist/ssr";
 import { GLYPH } from "@/lib/glyphs";
 import PromoForm from "./PromoForm";
 import PromoActions from "./PromoActions";
+import MarqueeHeading from "@/components/MarqueeHeading";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,7 @@ export default async function PromosPage() {
     <div className="page-shell">
       <div className="page-header">
         <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.diamond}</span> Promo</p>
-        <h1 className="display-md">Kode promo & diskon.</h1>
+        <MarqueeHeading text="Kode promo & diskon" reverse />
         <p className="body-md mt-2 tabular" style={{ color: "var(--shade-50)" }}>
           {promos.length} promo
         </p>
