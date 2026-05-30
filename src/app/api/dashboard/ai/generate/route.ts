@@ -1,87 +1,89 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { z } from "zod";
-import { withErrorHandler, unauthorized, badRequest } from "@/lib/api-handler";
+import { withErrorHandler, unauthorized, tooMany } from "@/lib/api-handler";
 import { rateLimit } from "@/lib/rate-limit";
+import { chatComplete } from "@/lib/ai";
 
 const schema = z.object({
   productName: z.string().min(1).max(120),
   category: z.string().max(50).optional(),
-  type: z.enum(["description", "promo"]).default("description"),
+  type: z.enum(["description", "promo", "whatsapp", "seo", "hashtags"]).default("description"),
+  tone: z.enum(["santai", "profesional", "lucu", "mewah"]).optional(),
 });
 
+type GenData = z.infer<typeof schema>;
+
 /**
- * AI-powered text generation untuk deskripsi produk dan caption promo.
- *
- * Jika OPENAI_API_KEY tidak di-set, gunakan template sederhana (fallback).
- * Ini memungkinkan fitur tetap berjalan tanpa biaya API di awal.
+ * AI content generation — product descriptions, promo captions, WhatsApp
+ * broadcast copy, SEO meta, and hashtag sets. Uses the central AI engine
+ * (OpenAI when configured, deterministic templates otherwise).
  */
 export const POST = withErrorHandler(async (req: Request) => {
   const session = await auth();
   if (!session?.user.tenantId) throw unauthorized();
 
   const rl = rateLimit(`ai:${session.user.id}`, { limit: 20, windowMs: 60_000 });
-  if (!rl.ok) throw badRequest("Terlalu banyak permintaan AI, coba lagi nanti.");
+  if (!rl.ok) throw tooMany("Terlalu banyak permintaan AI, coba lagi nanti.");
 
   const data = schema.parse(await req.json());
-  const apiKey = process.env.OPENAI_API_KEY;
 
-  if (apiKey) {
-    return generateWithOpenAI(apiKey, data);
+  try {
+    const result = await chatComplete(
+      [
+        { role: "system", content: "Kamu copywriter ahli untuk UMKM Indonesia. Tulis dalam Bahasa Indonesia, tanpa markdown." },
+        { role: "user", content: buildPrompt(data) },
+      ],
+      { maxTokens: 220, temperature: 0.75 },
+    );
+    if (result.provider === "fallback") return NextResponse.json(generateFallback(data));
+    return NextResponse.json({ text: result.text, provider: result.provider });
+  } catch {
+    return NextResponse.json(generateFallback(data));
   }
-  return generateFallback(data);
 });
 
-async function generateWithOpenAI(
-  apiKey: string,
-  data: { productName: string; category?: string; type: string },
-) {
-  const prompt =
-    data.type === "description"
-      ? `Buat deskripsi produk yang menarik untuk "${data.productName}"${data.category ? ` kategori ${data.category}` : ""}. Maksimal 80 kata, bahasa Indonesia, fokus pada manfaat dan keunikan produk. Jangan gunakan markdown.`
-      : `Buat caption promosi Instagram/WhatsApp untuk produk "${data.productName}"${data.category ? ` kategori ${data.category}` : ""}. Gunakan emoji, bahasa santai, dan CTA yang kuat. Maksimal 100 kata.`;
-
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "gpt-4o-mini",
-      messages: [{ role: "user", content: prompt }],
-      max_tokens: 200,
-      temperature: 0.7,
-    }),
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    return NextResponse.json({ error: `OpenAI error: ${err.slice(0, 100)}` }, { status: 502 });
+function buildPrompt(d: GenData): string {
+  const tone = d.tone ? ` Gunakan nada ${d.tone}.` : "";
+  const cat = d.category ? ` kategori ${d.category}` : "";
+  switch (d.type) {
+    case "promo":
+      return `Buat caption promosi Instagram/WhatsApp untuk produk "${d.productName}"${cat}. Pakai emoji, CTA kuat, maks 100 kata.${tone}`;
+    case "whatsapp":
+      return `Buat pesan WhatsApp broadcast untuk menawarkan "${d.productName}"${cat} ke pelanggan. Ramah, personal, ada CTA. Maks 90 kata.${tone}`;
+    case "seo":
+      return `Buat meta title (maks 60 karakter) dan meta description (maks 155 karakter) SEO untuk halaman produk "${d.productName}"${cat}. Format: "Title: ...\\nDescription: ...".`;
+    case "hashtags":
+      return `Buat 12 hashtag relevan untuk produk "${d.productName}"${cat} di Instagram/TikTok, dipisah spasi, diawali #.`;
+    default:
+      return `Buat deskripsi produk menarik untuk "${d.productName}"${cat}. Maks 80 kata, fokus manfaat dan keunikan.${tone}`;
   }
-
-  const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-  const text = json.choices?.[0]?.message?.content?.trim() ?? "";
-  return NextResponse.json({ text, provider: "openai" });
 }
 
-function generateFallback(data: { productName: string; category?: string; type: string }) {
+function generateFallback(data: GenData) {
   const name = data.productName;
   const cat = data.category || "produk";
 
   if (data.type === "promo") {
-    const templates = [
-      `🔥 PROMO SPESIAL! ${name} sekarang tersedia dengan harga terbaik! Yuk order sekarang sebelum kehabisan. Pesan via link di bio! 🛒✨`,
+    const t = [
+      `🔥 PROMO SPESIAL! ${name} sekarang tersedia dengan harga terbaik! Yuk order sebelum kehabisan. Pesan via link di bio! 🛒✨`,
       `✨ Cobain ${name} yang lagi hits! Rasanya bikin nagih, harganya ramah di kantong. Order sekarang, gratis ongkir! 🚀`,
-      `🎉 ${name} READY STOCK! Kualitas premium, harga bersahabat. Langsung order ya, stok terbatas! 💯`,
     ];
-    return NextResponse.json({ text: templates[Math.floor(Math.random() * templates.length)], provider: "template" });
+    return { text: t[Math.floor(Math.random() * t.length)], provider: "template" };
   }
-
-  const templates = [
-    `${name} — pilihan terbaik untuk pecinta ${cat}. Dibuat dengan bahan berkualitas dan proses yang higienis. Cocok untuk dinikmati kapan saja.`,
+  if (data.type === "whatsapp") {
+    return { text: `Halo Kak! 👋 Ada kabar baik, ${name} kami lagi ready nih. Kualitas terjamin, harga bersahabat. Mau pesan sekarang? Balas chat ini ya 😊`, provider: "template" };
+  }
+  if (data.type === "seo") {
+    return { text: `Title: ${name} Berkualitas - Pesan Online\nDescription: Beli ${name} ${cat} terbaik dengan harga terjangkau. Pesan mudah, pengiriman cepat. Order sekarang!`, provider: "template" };
+  }
+  if (data.type === "hashtags") {
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "");
+    return { text: `#${slug} #${cat.replace(/\s+/g, "")} #umkm #umkmindonesia #jajananviral #kulinerindonesia #produklokal #belanjaonline #promo #readystock #orderhere #supportlokal`, provider: "template" };
+  }
+  const t = [
+    `${name} — pilihan terbaik untuk pecinta ${cat}. Dibuat dengan bahan berkualitas dan proses higienis. Cocok dinikmati kapan saja.`,
     `Nikmati ${name} yang fresh dan berkualitas. Produk ${cat} favorit pelanggan kami. Pesan sekarang dan rasakan bedanya!`,
-    `${name} hadir untuk memenuhi kebutuhan ${cat} Anda. Kualitas terjamin, rasa yang konsisten, dan harga yang terjangkau.`,
   ];
-  return NextResponse.json({ text: templates[Math.floor(Math.random() * templates.length)], provider: "template" });
+  return { text: t[Math.floor(Math.random() * t.length)], provider: "template" };
 }

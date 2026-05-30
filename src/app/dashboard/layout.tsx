@@ -5,6 +5,8 @@ import ToastProvider, { ToastKeyframes } from "@/components/ui/Toast";
 import { isPlatformAdmin } from "@/lib/admin";
 import MarqueeTicker from "@/components/MarqueeTicker";
 import { buildReminders } from "@/lib/reminders";
+import AiAssistant from "@/components/AiAssistant";
+import { hasFeature } from "@/lib/features";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -14,6 +16,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     ? await buildReminders(session.user.tenantId)
     : { items: [], hasAlert: false };
   const alertCount = reminders.items.filter((i) => i.alert).length;
+  const aiEnabled = session.user.tenantId ? await hasFeature(session.user.tenantId, "aiAssistant") : false;
   return (
     <ToastProvider>
       <ToastKeyframes />
@@ -36,6 +39,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           )}
           {children}
         </main>
+        {aiEnabled && <AiAssistant />}
       </div>
     </ToastProvider>
   );

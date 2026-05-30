@@ -43,6 +43,7 @@ interface NavItem {
   icon: Icon;
   roles: Role[];
   featured?: boolean;
+  badge?: string;
 }
 
 interface NavGroup {
@@ -73,7 +74,8 @@ const NAV_GROUPS: NavGroup[] = [
     label: "Pertumbuhan",
     glyph: GLYPH.sparkle,
     items: [
-      { href: "/dashboard/insights", label: "Insights", icon: Sparkle, roles: ["OWNER"], featured: true },
+      { href: "/dashboard/ai", label: "AI Studio", icon: Sparkle, roles: ["OWNER"], featured: true, badge: "AI" },
+      { href: "/dashboard/insights", label: "Insights", icon: Sparkle, roles: ["OWNER"], featured: true, badge: "BI" },
       { href: "/dashboard/analytics", label: "Analytics", icon: ChartLine, roles: ["OWNER"] },
       { href: "/dashboard/customers", label: "Pelanggan", icon: UsersThree, roles: ["OWNER"] },
       { href: "/dashboard/loyalty", label: "Loyalty", icon: Trophy, roles: ["OWNER"] },
@@ -404,7 +406,7 @@ export default function DashboardNav({
                             fontSize: 10,
                           }}
                         >
-                          BI
+                          {item.badge ?? "BI"}
                         </span>
                       )}
                       {/* tooltip shown only when collapsed */}

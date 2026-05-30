@@ -26,6 +26,7 @@ const BOOLEAN_FEATURES = [
   "customDomain",
   "prioritySupport",
   "apiAccess",
+  "aiAssistant",
 ] as const;
 
 export type BooleanFeature = (typeof BOOLEAN_FEATURES)[number];
@@ -62,6 +63,7 @@ export const PLAN_FEATURES: Record<"BASIC" | "PRO" | "BUSINESS", PlanCaps> = {
     analyticsAdvanced: true,
     themeBuilder: true,
     templateBuilder: true,
+    aiAssistant: true,
     maxProducts: Number.POSITIVE_INFINITY,
     maxOutlets: 1,
     maxStaff: 0,
@@ -166,6 +168,7 @@ export const FEATURE_LABELS: Record<BooleanFeature, string> = {
   customDomain: "Custom Domain",
   prioritySupport: "Priority Support",
   apiAccess: "API Access",
+  aiAssistant: "AI Assistant 360",
 };
 
 export const BOOLEAN_FEATURE_LIST = BOOLEAN_FEATURES;

@@ -151,4 +151,11 @@ test.describe("dashboard", () => {
     await expect(page.locator("h1")).toContainText(/halo|selamat/i);
     await snap(page, shotPath(VP, 31, "dashboard-sidebar-collapsed"));
   });
+
+  test("32 — AI Studio 360", async ({ page }) => {
+    await safeGoto(page, "/dashboard/ai");
+    await expect(page.locator("h1")).toContainText(/asisten ai|ai studio/i);
+    await page.locator(".card").first().waitFor({ state: "visible" });
+    await snap(page, shotPath(VP, 32, "dashboard-ai-studio"));
+  });
 });
