@@ -60,6 +60,10 @@ Platform SaaS multi-tenant: bangun storefront, terima order via QRIS, jalankan P
 |:---:|:---:|:---:|
 | ![Theme Builder GUI dengan live preview](tests/screenshots/desktop-auth/26-dashboard-theme-builder.png) | ![Custom Domain dengan DNS instructions](tests/screenshots/desktop-auth/27-dashboard-custom-domain.png) | ![Template Builder — layout, button, icon, hero, carousel](tests/screenshots/desktop-auth/28-dashboard-template-builder.png) |
 
+| Notifikasi (WA + Telegram daily digest) | | |
+|:---:|:---:|:---:|
+| ![Daily digest WhatsApp + Telegram config dengan test-send](tests/screenshots/desktop-auth/29-dashboard-notifications.png) | | |
+
 ### Public storefront (1440 × 900)
 
 | Landing | Storefront / demo | Cart sheet |
@@ -102,6 +106,8 @@ Platform SaaS multi-tenant: bangun storefront, terima order via QRIS, jalankan P
 | Custom domain per tenant | ✅ GUI + DNS verify |
 | Theme Builder per tenant | ✅ GUI + live preview |
 | Template Builder (layout, button, icon, hero, carousel) | ✅ GUI + 4 layout templates |
+| Outlet-level reporting (order ter-assign ke outlet) | ✅ |
+| Daily digest otomatis (WhatsApp + Telegram) | ✅ Per-outlet, idempotent, cron hourly |
 | Refund / partial fulfillment | ❌ |
 
 ---
@@ -185,6 +191,56 @@ Platform SaaS multi-tenant: bangun storefront, terima order via QRIS, jalankan P
 | Promo ROI | Attributed revenue / discount cost | ROI multiplier per kode |
 
 Source code: [`src/lib/bi.ts`](src/lib/bi.ts). API endpoint: [`src/app/api/dashboard/insights/route.ts`](src/app/api/dashboard/insights/route.ts). UI: [`src/app/dashboard/insights/page.tsx`](src/app/dashboard/insights/page.tsx).
+
+---
+
+## Outlet reporting & daily digest automation
+
+Toko dengan banyak cabang kecil dapat melihat performa **per-outlet** dan menerima ringkasan harian otomatis via WhatsApp dan/atau Telegram.
+
+### Cara kerja
+
+1. **Order ter-assign ke outlet** — `Order.outletId` (POS/storefront mengirim outlet aktif). Aggregasi revenue/order dihitung per cabang.
+2. **Daily digest engine** ([`src/lib/daily-digest.ts`](src/lib/daily-digest.ts)) menyusun ringkasan window hari Asia/Jakarta: omzet + delta vs kemarin, order dibayar, pending bayar, pelanggan baru, produk terlaris, **breakdown per outlet**, dan **alert stok menipis** (threshold per tenant).
+3. **Multi-channel fan-out** ([`src/lib/notifications.ts`](src/lib/notifications.ts)) — WhatsApp (Fonnte) + Telegram (Bot API), dikirim ke channel yang diaktifkan owner.
+4. **Cron hourly** ([`/api/cron/daily-digest`](src/app/api/cron/daily-digest/route.ts)) — tiap jam, kirim ke tenant yang `dailyDigestHour`-nya cocok dengan jam Jakarta sekarang. Owner pilih jam kirim sendiri (mis. 21:00).
+5. **Idempotent** — tabel `NotificationLog` dengan unique `(tenantId, dedupeKey, channel)` mencegah double-send dalam satu hari. Channel yang gagal akan di-retry, yang sukses di-skip.
+
+### Konfigurasi (GUI)
+
+`/dashboard/notifications` — toggle WhatsApp/Telegram, paste Telegram Chat ID, atur jam kirim & threshold stok, **test-send** + **preview laporan hari ini** sebelum live.
+
+### Contoh isi laporan
+
+```
+📊 Laporan Harian — Kedai Kopi Nusantara
+Jumat, 30 Mei 2026
+
+💰 Omzet: Rp 2.450.000
+   ▲ 18% vs kemarin
+🧾 Order dibayar: 32
+⏳ Menunggu bayar: 3
+👤 Pelanggan baru: 5
+🏆 Terlaris: Kopi Susu Aren (24x)
+
+🏪 Per Outlet:
+• Cabang Kemang: Rp 1.200.000 (15 order)
+• Cabang Sudirman: Rp 980.000 (12 order)
+• Tanpa outlet: 5 order
+
+⚠️ Stok menipis:
+• V60 Single Origin: 2 tersisa
+• Croissant Butter: 4 tersisa
+```
+
+### Setup env (production)
+
+```env
+FONNTE_TOKEN=your-fonnte-token            # WhatsApp
+TELEGRAM_BOT_TOKEN=123456:ABC-DEF...      # Telegram bot
+TELEGRAM_BOT_USERNAME=umkmstore_bot       # untuk instruksi di GUI
+CRON_SECRET=random-string                 # protect cron endpoints
+```
 
 ---
 

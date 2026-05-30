@@ -23,6 +23,8 @@ const envSchema = z.object({
 
   // Notifications
   FONNTE_TOKEN: z.string().optional(),
+  TELEGRAM_BOT_TOKEN: z.string().optional(),
+  TELEGRAM_BOT_USERNAME: z.string().optional(),
 
   // Storage
   CLOUDINARY_CLOUD_NAME: z.string().optional(),

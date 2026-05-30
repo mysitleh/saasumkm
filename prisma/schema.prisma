@@ -45,6 +45,14 @@ model Tenant {
   carouselEnabled   Boolean? @default(false)
   carouselProductIds String?                       // JSON array of product IDs
 
+  // ── Notification preferences ────────────────────────────────────
+  notifyWhatsapp      Boolean? @default(true)
+  notifyTelegram      Boolean? @default(false)
+  telegramChatId      String?
+  dailyDigestEnabled  Boolean? @default(true)
+  dailyDigestHour     Int?     @default(21)   // 0-23 WIB, when to send daily digest
+  lowStockThreshold   Int?     @default(5)    // alert when product stock <= this
+
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -58,6 +66,7 @@ model Tenant {
   subscription Subscription?
   outlets      Outlet[]
   loyaltyCards LoyaltyCard[]
+  notificationLogs NotificationLog[]
 
   @@map("tenants")
 }
@@ -164,9 +173,12 @@ model Order {
   items    OrderItem[]
   payments Payment[]
 
+  outletId        String?
+
   @@index([tenantId, status])
   @@index([tenantId, createdAt])
   @@index([status])
+  @@index([outletId])
   @@map("orders")
 }
 
@@ -311,4 +323,21 @@ model LoyaltyPointLog {
 
   @@index([cardId])
   @@map("loyalty_point_logs")
+}
+
+model NotificationLog {
+  id         String   @id @default(cuid())
+  tenantId   String
+  kind       String   // DAILY_DIGEST | WEEKLY_REPORT | NEW_ORDER | LOW_STOCK | TEST
+  channel    String   // whatsapp | telegram
+  dedupeKey  String   // e.g. "DAILY_DIGEST:2026-05-27"
+  status     String   @default("SENT") // SENT | FAILED | SKIPPED
+  detail     String?
+  createdAt  DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, dedupeKey, channel])
+  @@index([tenantId])
+  @@map("notification_logs")
 }

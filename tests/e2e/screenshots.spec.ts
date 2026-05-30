@@ -127,4 +127,11 @@ test.describe("dashboard", () => {
     await page.locator(".card").first().waitFor({ state: "visible" });
     await snap(page, shotPath(VP, 28, "dashboard-template-builder"));
   });
+
+  test("29 — Notifications", async ({ page }) => {
+    await safeGoto(page, "/dashboard/notifications");
+    await expect(page.locator("h1")).toContainText(/laporan harian|notifikasi/i);
+    await page.locator(".card").first().waitFor({ state: "visible" });
+    await snap(page, shotPath(VP, 29, "dashboard-notifications"));
+  });
 });

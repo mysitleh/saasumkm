@@ -26,6 +26,7 @@ const schema = z.object({
     .min(1)
     .max(50),
   promoId: z.string().nullable().optional(),
+  outletId: z.string().nullable().optional(),
 });
 
 type Ctx = { params: Promise<{ slug: string }> };
@@ -83,6 +84,16 @@ export const POST = withErrorHandler<Ctx>(async (req, { params }) => {
   const total = Math.max(0, subtotal - discountAmount);
   const orderNumber = generateOrderNumber();
 
+  // Validate outlet belongs to this tenant (best-effort; ignore invalid).
+  let outletId: string | null = null;
+  if (data.outletId) {
+    const outlet = await prisma.outlet.findFirst({
+      where: { id: data.outletId, tenantId: tenant.id, isActive: true },
+      select: { id: true },
+    });
+    outletId = outlet?.id ?? null;
+  }
+
   const order = await prisma.$transaction(async (tx) => {
     const o = await tx.order.create({
       data: {
@@ -97,6 +108,7 @@ export const POST = withErrorHandler<Ctx>(async (req, { params }) => {
         discountAmount,
         total,
         promoId,
+        outletId,
         status: "WAITING_PAYMENT",
         items: { create: itemsForCreate },
       },

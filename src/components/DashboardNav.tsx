@@ -23,6 +23,7 @@ import {
   Sparkle,
   Palette,
   Globe,
+  BellRinging,
   type Icon,
 } from "@phosphor-icons/react";
 import { UStoreMark } from "@/components/icons";
@@ -90,6 +91,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/dashboard/outlets", label: "Outlet", icon: Storefront, roles: ["OWNER"] },
       { href: "/dashboard/staff", label: "Staff", icon: IdentificationBadge, roles: ["OWNER"] },
+      { href: "/dashboard/notifications", label: "Notifikasi", icon: BellRinging, roles: ["OWNER"] },
       { href: "/dashboard/billing", label: "Billing", icon: CreditCard, roles: ["OWNER"] },
       { href: "/dashboard/settings", label: "Pengaturan", icon: GearSix, roles: ["OWNER"] },
     ],
