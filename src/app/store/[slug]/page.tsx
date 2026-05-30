@@ -8,6 +8,8 @@ import StoreJsonLd from "@/components/StoreJsonLd";
 import Link from "next/link";
 import { GLYPH } from "@/lib/glyphs";
 import { resolveTenantTheme, themeToCssVars } from "@/lib/theme-runtime";
+import LogoMark from "@/components/icons/LogoMark";
+import { parseLogoConfig } from "@/lib/logo";
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -32,6 +34,7 @@ export default async function StorefrontPage({ params }: Props) {
   const theme = resolveTenantTheme(tenant);
   const themeVars = themeToCssVars(theme);
   const isDark = theme.mode === "dark";
+  const logoCfg = parseLogoConfig(tenant.logoConfig);
 
   return (
     <div
@@ -53,6 +56,8 @@ export default async function StorefrontPage({ params }: Props) {
               alt={tenant.name}
               style={{ width: 56, height: 56, borderRadius: 12, objectFit: "cover", border: "1px solid var(--hairline-light)" }}
             />
+          ) : logoCfg ? (
+            <LogoMark config={logoCfg} size={56} idSeed="storehead" />
           ) : (
             <div style={{ width: 56, height: 56, borderRadius: 12, background: "var(--canvas-cream)", display: "grid", placeItems: "center", border: "1px solid var(--hairline-light)" }}>
               <ShoppingBag size={26} style={{ color: "var(--shade-50)" }} />

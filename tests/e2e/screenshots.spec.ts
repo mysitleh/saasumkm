@@ -158,4 +158,11 @@ test.describe("dashboard", () => {
     await page.locator(".card").first().waitFor({ state: "visible" });
     await snap(page, shotPath(VP, 32, "dashboard-ai-studio"));
   });
+
+  test("33 — Logo Builder", async ({ page }) => {
+    await safeGoto(page, "/dashboard/logo");
+    await expect(page.locator("h1")).toContainText(/logo/i);
+    await page.locator(".card").first().waitFor({ state: "visible" });
+    await snap(page, shotPath(VP, 33, "dashboard-logo-builder"));
+  });
 });

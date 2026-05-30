@@ -1622,3 +1622,102 @@ html[data-sidebar="collapsed"] .ums-collapse-icon { transform: rotate(180deg); }
 }
 .store-add-btn:hover { background: var(--iso-violet-deep); }
 .store-add-btn:active { transform: scale(0.9); }
+
+/* ============================================================
+   LOGO BUILDER — flexible brand mark designer.
+   ============================================================ */
+.logo-builder-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+@media (min-width: 1024px) {
+  .logo-builder-grid { grid-template-columns: 1fr 360px; align-items: start; gap: 28px; }
+}
+.logo-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+@media (min-width: 640px) { .logo-preset-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.logo-preset {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 6px;
+  border-radius: 14px;
+  border: 1px solid var(--hairline-light);
+  background: var(--canvas-cream);
+  cursor: pointer;
+  transition: border-color .15s ease, transform .12s ease, background-color .15s ease;
+}
+.logo-preset:hover { border-color: var(--iso-violet); background: var(--iso-violet-soft); }
+.logo-symbol-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+.logo-symbol-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  border: 1px solid var(--hairline-light);
+  background: var(--canvas-light);
+  cursor: pointer;
+  transition: border-color .15s ease, background-color .15s ease;
+}
+.logo-symbol-btn[data-active="true"] { border-color: var(--iso-violet); background: var(--iso-violet-soft); box-shadow: 0 0 0 2px var(--iso-violet-soft); }
+.logo-swatch {
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px var(--hairline-light);
+  transition: transform .12s ease;
+}
+.logo-swatch[data-active="true"] { border-color: var(--canvas-light); box-shadow: 0 0 0 2px var(--iso-violet); }
+.logo-color-input {
+  width: 34px; height: 34px; padding: 0; border: 1px solid var(--hairline-light);
+  border-radius: 9999px; background: none; cursor: pointer;
+}
+.logo-color-input::-webkit-color-swatch-wrapper { padding: 3px; }
+.logo-color-input::-webkit-color-swatch { border: none; border-radius: 9999px; }
+
+.logo-preview-col { position: sticky; top: 72px; }
+.logo-preview-card {
+  background: var(--canvas-light);
+  border: 1px solid var(--hairline-light);
+  border-radius: var(--radius-card);
+  padding: 24px;
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.logo-preview-hero {
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, var(--iso-violet-soft), transparent),
+    repeating-conic-gradient(var(--canvas-cream) 0% 25%, transparent 0% 50%) 0 / 18px 18px;
+}
+.logo-lockup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--hairline-light);
+}
+.logo-wordmark {
+  font-family: var(--font-display), "Plus Jakarta Sans", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.4px;
+}

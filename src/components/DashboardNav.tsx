@@ -96,6 +96,7 @@ const NAV_GROUPS: NavGroup[] = [
     label: "Branding",
     glyph: GLYPH.diamond,
     items: [
+      { href: "/dashboard/logo", label: "Logo Builder", icon: Sparkle, roles: ["OWNER"] },
       { href: "/dashboard/theme", label: "Theme Builder", icon: Palette, roles: ["OWNER"] },
       { href: "/dashboard/template", label: "Template", icon: Sparkle, roles: ["OWNER"] },
       { href: "/dashboard/domain", label: "Custom Domain", icon: Globe, roles: ["OWNER"] },

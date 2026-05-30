@@ -1,4 +1,5 @@
 import UMonogram from "./UMonogram";
+import type { LogoConfig } from "@/lib/logo";
 
 interface Props {
   className?: string;
@@ -7,6 +8,10 @@ interface Props {
   variant?: "ink" | "on-primary";
   /** Hide the wordmark, show only the monogram. */
   markOnly?: boolean;
+  /** Optional custom logo config (tenant brand). Overrides variant tone. */
+  config?: Partial<LogoConfig>;
+  /** Override the wordmark text (tenant store name). */
+  wordmark?: string;
 }
 
 const sizes = {
@@ -18,8 +23,9 @@ const sizes = {
 /**
  * UMKMStore wordmark — monogram + thin display-weight wordmark.
  * On dark canvas the monogram flips to an on-primary tone so it stays legible.
+ * Accepts an optional `config` to render a tenant's fully custom logo.
  */
-export default function UStoreMark({ className, size = "md", variant = "ink", markOnly = false }: Props) {
+export default function UStoreMark({ className, size = "md", variant = "ink", markOnly = false, config, wordmark }: Props) {
   const s = sizes[size];
   const color = variant === "on-primary" ? "var(--on-primary)" : "var(--ink)";
   const markTone = variant === "on-primary" ? "on-primary" : "brand";
@@ -29,7 +35,7 @@ export default function UStoreMark({ className, size = "md", variant = "ink", ma
       className={`inline-flex items-center ${className ?? ""}`}
       style={{ color, gap: s.gap }}
     >
-      <UMonogram size={s.icon} tone={markTone} />
+      <UMonogram size={s.icon} tone={markTone} config={config} />
       {!markOnly && (
         <span
           style={{
@@ -41,7 +47,11 @@ export default function UStoreMark({ className, size = "md", variant = "ink", ma
             lineHeight: 1,
           }}
         >
-          UMKM<span style={{ fontWeight: 380, opacity: 0.7 }}>Store</span>
+          {wordmark ? (
+            wordmark
+          ) : (
+            <>UMKM<span style={{ fontWeight: 380, opacity: 0.7 }}>Store</span></>
+          )}
         </span>
       )}
     </span>

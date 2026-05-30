@@ -25,6 +25,7 @@ model Tenant {
   themeInk      String?                        // hex: text color
   themeRadius   Int?      @default(12)         // border-radius for cards 0..32px
   themeFont     String?   @default("Inter")    // Inter | Plus Jakarta Sans | Manrope | Poppins | DM Sans
+  logoConfig    String?                        // JSON: flexible logo builder config (shape, symbol, fill, colors)
 
   // ── Custom domain ────────────────────────────────────────────────
   customDomain          String?  @unique
