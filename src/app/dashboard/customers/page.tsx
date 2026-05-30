@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { GLYPH } from "@/lib/glyphs";
 import CustomerSearch from "./CustomerSearch";
 import BroadcastForm from "./BroadcastForm";
-import MarqueeHeading from "@/components/MarqueeHeading";
 
 export const dynamic = "force-dynamic";
 
@@ -63,7 +62,7 @@ export default async function CustomersPage({
     <div className="page-shell">
       <div className="page-header">
         <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.lozenge}</span> Customers</p>
-        <MarqueeHeading text="Pelanggan" />
+        <h1 className="display-md">Pelanggan.</h1>
         <p className="body-md mt-2 tabular" style={{ color: "var(--shade-50)" }}>{total} pelanggan unik</p>
       </div>
 

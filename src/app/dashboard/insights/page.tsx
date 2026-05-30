@@ -8,7 +8,6 @@ import { GLYPH } from "@/lib/glyphs";
 import InsightChart from "@/components/InsightChart";
 import HeatmapGrid from "@/components/HeatmapGrid";
 import StatTile from "@/components/StatTile";
-import MarqueeHeading from "@/components/MarqueeHeading";
 
 export const dynamic = "force-dynamic";
 
@@ -65,7 +64,7 @@ export default async function InsightsPage() {
       {/* Page header */}
       <div className="page-header">
         <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.sparkle}</span> Business Intelligence</p>
-        <MarqueeHeading text="Insights Anda" />
+        <h1 className="display-md">Insights Anda</h1>
         <p className="body-md mt-2" style={{ color: "var(--shade-50)" }}>
           Analitik standar internasional — RFM (Hughes 1996), Holt forecast, cohort retention, market basket.
         </p>

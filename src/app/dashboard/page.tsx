@@ -7,7 +7,8 @@ import { ArrowSquareOut } from "@phosphor-icons/react/dist/ssr";
 import { GLYPH } from "@/lib/glyphs";
 import OnboardingBanner from "@/components/OnboardingBanner";
 import KpiStrip, { type KpiItem } from "./KpiStrip";
-import MarqueeHeading from "@/components/MarqueeHeading";
+import MarqueeTicker from "@/components/MarqueeTicker";
+import { buildReminders } from "@/lib/reminders";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -54,6 +55,8 @@ export default async function DashboardPage() {
     prisma.order.findMany({ where: { tenantId }, orderBy: { createdAt: "desc" }, take: 5, include: { items: true } }),
     prisma.tenant.findUnique({ where: { id: tenantId } }),
   ]);
+
+  const reminders = await buildReminders(tenantId);
 
   const onboardingSteps = [
     { label: "Profil toko", done: !!(tenant?.description || tenant?.address), href: "/dashboard/settings" },
@@ -107,7 +110,7 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className="page-header">
         <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.hexFilled}</span> Dashboard</p>
-        <MarqueeHeading text={`Halo, ${session.user.name?.split(" ")[0] ?? "Juragan"}`} />
+        <h1 className="display-md">Halo, {session.user.name?.split(" ")[0]}.</h1>
         <p className="body-md mt-2" style={{ color: "var(--shade-50)" }}>
           {tenant?.name}
           {tenant?.slug && (
@@ -125,6 +128,10 @@ export default async function DashboardPage() {
             </>
           )}
         </p>
+      </div>
+
+      <div className="mb-6">
+        <MarqueeTicker items={reminders.items} tag={reminders.hasAlert ? "Perlu Aksi" : "Info"} alert={reminders.hasAlert} />
       </div>
 
       <OnboardingBanner steps={onboardingSteps} />

@@ -7,7 +7,6 @@ import { hasFeature } from "@/lib/features";
 import FeatureGate from "@/components/FeatureGate";
 import { GLYPH } from "@/lib/glyphs";
 import TemplateBuilder from "./TemplateBuilder";
-import MarqueeHeading from "@/components/MarqueeHeading";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +44,7 @@ export default async function TemplatePage() {
     <div className="page-shell">
       <div className="page-header">
         <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.sparkle}</span> Template Builder</p>
-        <MarqueeHeading text="Custom storefront, tanpa coding" reverse />
+        <h1 className="display-md">Custom storefront, tanpa coding.</h1>
         <p className="body-md mt-2" style={{ color: "var(--shade-50)" }}>
           Pilih layout, button, icon, hero, dan carousel. Live preview di kanan, langsung apply ke storefront publik.
         </p>

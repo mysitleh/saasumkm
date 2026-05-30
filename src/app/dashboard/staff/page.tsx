@@ -7,7 +7,6 @@ import Link from "next/link";
 import { GLYPH } from "@/lib/glyphs";
 import StaffList from "./StaffList";
 import StaffForm from "./StaffForm";
-import MarqueeHeading from "@/components/MarqueeHeading";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +21,7 @@ export default async function StaffPage() {
       <div className="page-shell">
         <div className="page-header">
           <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.lozenge}</span> Staff</p>
-          <MarqueeHeading text="Staff management" />
+          <h1 className="display-md">Staff management.</h1>
         </div>
         <div className="card text-center max-w-xl mx-auto" style={{ padding: 48 }}>
           <span className="empty-state-glyph glyph">{GLYPH.lozenge}</span>
@@ -48,7 +47,7 @@ export default async function StaffPage() {
     <div className="page-shell">
       <div className="page-header">
         <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.lozenge}</span> Staff</p>
-        <MarqueeHeading text="Staff management" />
+        <h1 className="display-md">Staff management.</h1>
         <p className="body-md mt-2 tabular" style={{ color: "var(--shade-50)" }}>
           {staff.length} kasir aktif
         </p>

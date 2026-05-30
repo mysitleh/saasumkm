@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import SettingsForm from "./SettingsForm";
 import { GLYPH } from "@/lib/glyphs";
-import MarqueeHeading from "@/components/MarqueeHeading";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -14,7 +13,7 @@ export default async function SettingsPage() {
     <div className="page-shell reading-col">
       <div className="page-header">
         <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.hexMolecule}</span> Pengaturan</p>
-        <MarqueeHeading text="Profil toko" />
+        <h1 className="display-md">Profil toko.</h1>
         <p className="body-md mt-2" style={{ color: "var(--shade-50)" }}>
           Kelola profil toko, QRIS, dan tampilan storefront Anda.
         </p>
