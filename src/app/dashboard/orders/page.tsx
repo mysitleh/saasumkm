@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { GLYPH } from "@/lib/glyphs";
 import OrderSearch from "./OrderSearch";
+import Pagination from "@/components/Pagination";
 
 const STATUS_TABS = [
   { value: "", label: "Semua" },
@@ -119,27 +120,13 @@ export default async function OrdersPage({
         )}
       </section>
 
-      {totalPages > 1 && (
-        <nav className="flex justify-center gap-1.5 mt-6 flex-wrap" aria-label="Pagination">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-            <Link
-              key={p}
-              href={buildHref({ status, q, page: String(p) })}
-              className="caption tabular inline-flex items-center justify-center"
-              style={{
-                width: 36, height: 36,
-                background: p === currentPage ? "var(--ink)" : "var(--canvas-light)",
-                color: p === currentPage ? "var(--on-primary)" : "var(--ink)",
-                border: p === currentPage ? "1px solid var(--ink)" : "1px solid var(--hairline-light)",
-                borderRadius: 9999,
-              }}
-              aria-current={p === currentPage ? "page" : undefined}
-            >
-              {p}
-            </Link>
-          ))}
-        </nav>
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={total}
+        pageSize={pageSize}
+        hrefFor={(p) => buildHref({ status, q, page: String(p) })}
+      />
     </div>
   );
 }

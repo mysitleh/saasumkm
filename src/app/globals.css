@@ -1392,6 +1392,11 @@ html[data-sidebar="collapsed"] .ums-collapse-icon { transform: rotate(180deg); }
   border: 1px solid var(--hairline-light);
   box-shadow: 0 12px 30px -8px rgba(108,76,241,0.28), 0 4px 10px -4px rgba(0,0,0,0.12);
 }
+/* Hard guard: the floating dock is mobile-only. Hidden from tablet up
+   regardless of utility-class ordering. */
+@media (min-width: 768px) {
+  .ums-floatnav { display: none !important; }
+}
 .ums-floatnav-item {
   display: inline-flex;
   flex-direction: column;
@@ -1720,4 +1725,75 @@ html[data-sidebar="collapsed"] .ums-collapse-icon { transform: rotate(180deg); }
   font-weight: 700;
   font-size: 18px;
   letter-spacing: -0.4px;
+}
+
+/* ============================================================
+   PAGINATION — robust, modern, eye-catching page navigator.
+   ============================================================ */
+.pagination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+.pagination-summary {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--shade-50);
+}
+.pagination-summary strong { color: var(--ink); font-weight: 700; }
+.pagination-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 9999px;
+  background: var(--canvas-light);
+  border: 1px solid var(--hairline-light);
+  box-shadow: 0 6px 18px -10px rgba(108,76,241,0.22), 0 1px 0 rgba(255,255,255,0.6) inset;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.pagination-bar::-webkit-scrollbar { display: none; }
+.pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 6px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--shade-60);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .14s ease, color .14s ease, transform .12s ease;
+}
+.pagination-btn:hover:not(.is-active):not(.is-disabled) {
+  background: var(--iso-violet-soft);
+  color: var(--iso-violet-deep);
+}
+.pagination-btn:active:not(.is-disabled) { transform: scale(0.92); }
+.pagination-btn.is-active {
+  background: var(--iso-violet);
+  color: #fff;
+  box-shadow: 0 6px 14px -5px rgba(108,76,241,0.6);
+  cursor: default;
+}
+.pagination-btn.is-disabled {
+  color: var(--shade-30);
+  cursor: not-allowed;
+}
+.pagination-gap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 36px;
+  color: var(--shade-40);
+  font-weight: 700;
+  letter-spacing: 1px;
 }
