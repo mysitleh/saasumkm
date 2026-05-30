@@ -30,8 +30,8 @@ test.describe("public", () => {
 
   test("05 — Storefront cart sheet", async ({ page }) => {
     await safeGoto(page, "/store/demo");
-    // Add 2 items
-    const addBtns = page.getByRole("button", { name: /^Tambah$/ });
+    // Add 2 items (compact circular add buttons, aria-label "Tambah <product>")
+    const addBtns = page.getByRole("button", { name: /^Tambah / });
     await addBtns.first().click();
     await addBtns.nth(1).click();
     // Open cart via bottom FAB

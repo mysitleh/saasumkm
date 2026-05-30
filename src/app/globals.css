@@ -1599,3 +1599,26 @@ html[data-sidebar="collapsed"] .ums-collapse-icon { transform: rotate(180deg); }
   font-weight: 700;
   margin-top: 1px;
 }
+
+/* ============================================================
+   STOREFRONT — compact circular add-to-cart button.
+   Replaces the stretched full-width "Tambah" pill with a small,
+   proportional round control sitting beside the price.
+   ============================================================ */
+.store-add-btn {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--iso-violet);
+  color: #fff;
+  box-shadow: 0 6px 14px -6px rgba(108,76,241,0.6);
+  transition: background-color .15s ease, transform .12s ease;
+}
+.store-add-btn:hover { background: var(--iso-violet-deep); }
+.store-add-btn:active { transform: scale(0.9); }

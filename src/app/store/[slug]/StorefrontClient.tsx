@@ -382,11 +382,19 @@ export default function StorefrontClient({ tenant, products, categories }: Props
               <div className="p-3 flex-1 flex flex-col">
                 <p className="body-md line-clamp-2 mb-1">{product.name}</p>
                 {product.category && <p className="micro" style={{ color: "var(--shade-50)" }}>{product.category.name}</p>}
-                <p className="body-strong tabular mt-1">{formatRupiah(product.price)}</p>
-                <p className="micro tabular mb-3" style={{ color: "var(--shade-50)" }}>Stok: {product.stock}</p>
-                <button onClick={() => addToCart(product)} className="pill pill-primary pill-sm mt-auto">
-                  <Plus size={12} weight="bold" /> Tambah
-                </button>
+                <div className="flex items-end justify-between gap-2 mt-auto pt-2">
+                  <div className="min-w-0">
+                    <p className="body-strong tabular" style={{ lineHeight: 1.2 }}>{formatRupiah(product.price)}</p>
+                    <p className="micro tabular" style={{ color: "var(--shade-50)" }}>Stok: {product.stock}</p>
+                  </div>
+                  <button
+                    onClick={() => addToCart(product)}
+                    className="store-add-btn ums-tap"
+                    aria-label={`Tambah ${product.name}`}
+                  >
+                    <Plus size={16} weight="bold" />
+                  </button>
+                </div>
               </div>
             </article>
           ))}
