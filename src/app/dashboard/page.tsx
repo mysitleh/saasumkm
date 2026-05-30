@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowSquareOut } from "@phosphor-icons/react/dist/ssr";
 import { GLYPH } from "@/lib/glyphs";
 import OnboardingBanner from "@/components/OnboardingBanner";
+import KpiStrip, { type KpiItem } from "./KpiStrip";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -66,6 +67,40 @@ export default async function DashboardPage() {
   const orderDelta =
     yesterdayOrders > 0 ? Math.round(((todayOrders - yesterdayOrders) / yesterdayOrders) * 100) : null;
 
+  const kpis: KpiItem[] = [
+    {
+      glyph: GLYPH.diamond,
+      label: "Total Omzet",
+      value: totalRevenue._sum.total ?? 0,
+      format: "rupiah",
+      sub: `Hari ini: ${formatRupiah(todayRev)}`,
+      delta: revDelta,
+    },
+    {
+      glyph: GLYPH.hexFilled,
+      label: "Total Order",
+      value: totalOrders,
+      format: "plain",
+      sub: `Hari ini: ${todayOrders}`,
+      delta: orderDelta,
+    },
+    {
+      glyph: GLYPH.circleRing,
+      label: "Menunggu Bayar",
+      value: pendingOrders,
+      format: "plain",
+      sub: "Perlu dikonfirmasi",
+      accent: pendingOrders > 0 ? "ink" : undefined,
+    },
+    {
+      glyph: GLYPH.hex,
+      label: "Produk Aktif",
+      value: productCount,
+      format: "plain",
+      sub: "Tersedia di toko",
+    },
+  ];
+
   return (
     <div className="page-shell">
       {/* Header */}
@@ -93,36 +128,8 @@ export default async function DashboardPage() {
 
       <OnboardingBanner steps={onboardingSteps} />
 
-      {/* KPI strip */}
-      <div className="kpi-grid mb-7">
-        <Kpi
-          glyph={GLYPH.diamond}
-          label="Total Omzet"
-          value={formatRupiah(totalRevenue._sum.total ?? 0)}
-          sub={`Hari ini: ${formatRupiah(todayRev)}`}
-          delta={revDelta}
-        />
-        <Kpi
-          glyph={GLYPH.hexFilled}
-          label="Total Order"
-          value={String(totalOrders)}
-          sub={`Hari ini: ${todayOrders}`}
-          delta={orderDelta}
-        />
-        <Kpi
-          glyph={GLYPH.circleRing}
-          label="Menunggu Bayar"
-          value={String(pendingOrders)}
-          sub="Perlu dikonfirmasi"
-          accent={pendingOrders > 0 ? "ink" : undefined}
-        />
-        <Kpi
-          glyph={GLYPH.hex}
-          label="Produk Aktif"
-          value={String(productCount)}
-          sub="Tersedia di toko"
-        />
-      </div>
+      {/* KPI strip — animated count-up */}
+      <KpiStrip items={kpis} />
 
       {/* Quick actions */}
       <div className="quick-actions">
@@ -183,30 +190,6 @@ export default async function DashboardPage() {
           </ul>
         )}
       </section>
-    </div>
-  );
-}
-
-function Kpi({ glyph, label, value, sub, delta, accent }: {
-  glyph: string;
-  label: string;
-  value: string;
-  sub: string;
-  delta?: number | null;
-  accent?: "ink";
-}) {
-  return (
-    <div className={accent === "ink" ? "kpi-card kpi-card-ink" : "kpi-card"}>
-      <p className="kpi-eyebrow"><span className="glyph">{glyph}</span> {label}</p>
-      <p className="kpi-value" title={value}>{value}</p>
-      <div className="flex items-center gap-2 flex-wrap">
-        <p className="kpi-sub">{sub}</p>
-        {delta !== undefined && delta !== null && (
-          <span className="micro tabular" style={{ color: delta >= 0 ? (accent === "ink" ? "var(--aloe-10)" : "var(--ink)") : "var(--shade-50)" }}>
-            {delta >= 0 ? GLYPH.up : GLYPH.down} {Math.abs(delta)}%
-          </span>
-        )}
-      </div>
     </div>
   );
 }

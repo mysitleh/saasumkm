@@ -24,10 +24,12 @@ import {
   Palette,
   Globe,
   BellRinging,
+  MagnifyingGlass,
   type Icon,
 } from "@phosphor-icons/react";
 import { UStoreMark } from "@/components/icons";
 import { GLYPH } from "@/lib/glyphs";
+import CommandPalette from "@/components/ui/CommandPalette";
 import type { Session } from "next-auth";
 
 type Role = "OWNER" | "CASHIER";
@@ -41,22 +43,11 @@ interface NavItem {
 }
 
 interface NavGroup {
-  /** All-caps group label rendered as eyebrow above items. */
   label: string;
   glyph: string;
   items: NavItem[];
 }
 
-/**
- * Categorized nav structure.
- * - "Operasi"   : daily transactional work (Dashboard, Pesanan, POS)
- * - "Katalog"   : selling surface mgmt (Produk, Promo)
- * - "Pertumbuhan": growth/insight tools (Insights, Analytics, Pelanggan, Loyalty)
- * - "Organisasi": tenant config (Outlet, Staff, Billing, Pengaturan)
- *
- * Spacers + section eyebrows make the sidebar scannable instead of a
- * flat 12-item dump. Mobile drawer keeps the same grouping.
- */
 const NAV_GROUPS: NavGroup[] = [
   {
     label: "Operasi",
@@ -117,6 +108,11 @@ function flatten(groups: NavGroup[]): NavItem[] {
   return groups.flatMap((g) => g.items);
 }
 
+function isActivePath(pathname: string, href: string): boolean {
+  if (href === "/dashboard") return pathname === "/dashboard";
+  return pathname === href || pathname.startsWith(href + "/");
+}
+
 export default function DashboardNav({ session }: { session: Session }) {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
@@ -127,6 +123,8 @@ export default function DashboardNav({ session }: { session: Session }) {
 
   return (
     <>
+      <CommandPalette role={role} />
+
       {/* Header — nav-bar-light */}
       <header
         className="sticky top-0 z-40"
@@ -135,12 +133,42 @@ export default function DashboardNav({ session }: { session: Session }) {
         <div className="flex items-center justify-between gap-3 px-4 md:px-6 h-full">
           <div className="flex items-center gap-3 min-w-0">
             <UStoreMark size="sm" />
-            <span className="hidden sm:inline" style={{ color: "var(--shade-30)" }}>|</span>
-            <span className="caption hidden sm:inline truncate" style={{ color: "var(--shade-50)" }}>
+            <span className="hidden md:inline" style={{ color: "var(--hairline-light)" }}>│</span>
+            <span className="caption hidden md:inline truncate" style={{ color: "var(--shade-50)" }}>
               {session.user.name}
             </span>
           </div>
-          <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {/* ⌘K search trigger */}
+            <button
+              onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
+              className="ums-search-trigger hidden sm:flex items-center gap-2"
+              style={{
+                background: "var(--canvas-cream)",
+                border: "1px solid var(--hairline-light)",
+                borderRadius: 9999,
+                padding: "6px 8px 6px 12px",
+                color: "var(--shade-50)",
+                fontSize: 13,
+                cursor: "pointer",
+              }}
+              aria-label="Buka pencarian cepat"
+            >
+              <MagnifyingGlass size={14} />
+              <span className="hidden lg:inline">Cari…</span>
+              <kbd
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 10,
+                  background: "var(--canvas-light)",
+                  border: "1px solid var(--hairline-light)",
+                  borderRadius: 5,
+                  padding: "1px 5px",
+                }}
+              >
+                ⌘K
+              </kbd>
+            </button>
             {session.user.tenantSlug && (
               <Link
                 href={`/store/${session.user.tenantSlug}`}
@@ -163,7 +191,7 @@ export default function DashboardNav({ session }: { session: Session }) {
         </div>
       </header>
 
-      {/* Mobile bottom nav (3 main items + More button) */}
+      {/* Mobile bottom nav */}
       <nav
         className="fixed bottom-0 left-0 right-0 z-40 md:hidden"
         style={{
@@ -176,12 +204,12 @@ export default function DashboardNav({ session }: { session: Session }) {
         <div className="flex">
           {mobileMain.map((item) => {
             const ActiveIcon = item.icon;
-            const active = pathname === item.href || pathname.startsWith(item.href + "/");
+            const active = isActivePath(pathname, item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex-1 flex flex-col items-center py-2.5 gap-0.5 micro min-w-0"
+                className="flex-1 flex flex-col items-center py-2.5 gap-0.5 micro min-w-0 ums-tap"
                 style={{ color: active ? "var(--ink)" : "var(--shade-50)" }}
               >
                 <ActiveIcon size={20} weight={active ? "fill" : "regular"} />
@@ -191,7 +219,7 @@ export default function DashboardNav({ session }: { session: Session }) {
           })}
           <button
             onClick={() => setMoreOpen(!moreOpen)}
-            className="flex-1 flex flex-col items-center py-2.5 gap-0.5 micro"
+            className="flex-1 flex flex-col items-center py-2.5 gap-0.5 micro ums-tap"
             style={{ color: moreOpen ? "var(--ink)" : "var(--shade-50)" }}
           >
             <DotsThree size={20} weight="bold" />
@@ -200,16 +228,16 @@ export default function DashboardNav({ session }: { session: Session }) {
         </div>
       </nav>
 
-      {/* Mobile "More" drawer — keeps the categorized grouping */}
+      {/* Mobile "More" drawer */}
       {moreOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 ums-fade"
             style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)" }}
             onClick={() => setMoreOpen(false)}
           />
           <div
-            className="absolute bottom-0 left-0 right-0 max-h-[80vh] overflow-y-auto"
+            className="absolute bottom-0 left-0 right-0 max-h-[80vh] overflow-y-auto ums-sheet"
             style={{
               background: "var(--canvas-light)",
               borderTopLeftRadius: 20,
@@ -233,13 +261,13 @@ export default function DashboardNav({ session }: { session: Session }) {
                   <div className="grid grid-cols-3 gap-2">
                     {group.items.map((item) => {
                       const ActiveIcon = item.icon;
-                      const active = pathname === item.href || pathname.startsWith(item.href + "/");
+                      const active = isActivePath(pathname, item.href);
                       return (
                         <Link
                           key={item.href}
                           href={item.href}
                           onClick={() => setMoreOpen(false)}
-                          className="flex flex-col items-center justify-center gap-1.5 micro text-center min-w-0"
+                          className="flex flex-col items-center justify-center gap-1.5 micro text-center min-w-0 ums-tap"
                           style={{
                             padding: "12px 6px",
                             background: active ? "var(--aloe-10)" : "transparent",
@@ -264,47 +292,56 @@ export default function DashboardNav({ session }: { session: Session }) {
         </div>
       )}
 
-      {/* Sidebar desktop — categorized with eyebrow group heads + spacers */}
+      {/* Sidebar desktop — minimalist, separators, active-bar indicator */}
       <aside
-        className="hidden md:flex fixed left-0 flex-col z-30 overflow-y-auto"
+        className="hidden md:flex fixed left-0 flex-col z-30 overflow-y-auto ums-sidebar"
         style={{
           top: 56,
           bottom: 0,
           width: 224,
           background: "var(--canvas-light)",
           borderRight: "1px solid var(--hairline-light)",
-          padding: "20px 12px",
+          padding: "16px 12px 24px",
         }}
         aria-label="Navigasi utama"
       >
         {groups.map((group, gIdx) => (
-          <div key={group.label} style={{ marginTop: gIdx === 0 ? 0 : 18 }}>
-            <p
-              className="eyebrow-cap"
-              style={{
-                paddingLeft: 12,
-                paddingRight: 12,
-                marginBottom: 8,
-                color: "var(--shade-40)",
-                fontSize: 10.5,
-                letterSpacing: "0.84px",
-              }}
-            >
-              <span className="glyph" style={{ marginRight: 6, color: "var(--shade-40)" }}>
-                {group.glyph}
+          <div key={group.label} style={{ marginTop: gIdx === 0 ? 0 : 14 }}>
+            {/* Group separator + label */}
+            <div className="flex items-center gap-2" style={{ padding: "0 12px", marginBottom: 8 }}>
+              <span className="eyebrow-cap" style={{ color: "var(--shade-40)", fontSize: 10, letterSpacing: "0.9px", whiteSpace: "nowrap" }}>
+                {group.label}
               </span>
-              {group.label}
-            </p>
-            <ul className="flex flex-col" style={{ gap: 2 }}>
+              <span style={{ flex: 1, height: 1, background: "var(--hairline-light)" }} aria-hidden="true" />
+            </div>
+
+            <ul className="flex flex-col" style={{ gap: 1 }}>
               {group.items.map((item) => {
                 const ActiveIcon = item.icon;
-                const active = pathname === item.href || pathname.startsWith(item.href + "/");
+                const active = isActivePath(pathname, item.href);
                 const featured = item.featured && !active;
                 return (
-                  <li key={item.href}>
+                  <li key={item.href} style={{ position: "relative" }}>
+                    {/* active indicator bar */}
+                    {active && (
+                      <span
+                        aria-hidden="true"
+                        style={{
+                          position: "absolute",
+                          left: 0,
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          width: 3,
+                          height: 18,
+                          borderRadius: 9999,
+                          background: "var(--ink)",
+                        }}
+                      />
+                    )}
                     <Link
                       href={item.href}
-                      className="flex items-center gap-3 caption transition-colors"
+                      className="ums-navlink flex items-center gap-3 caption"
+                      data-active={active}
                       style={{
                         padding: "9px 12px",
                         background: active
@@ -313,17 +350,24 @@ export default function DashboardNav({ session }: { session: Session }) {
                             ? "var(--pistachio-10)"
                             : "transparent",
                         color: "var(--ink)",
-                        fontWeight: active ? 550 : 500,
-                        borderRadius: 9999,
-                        minHeight: 36,
+                        fontWeight: active ? 600 : 500,
+                        borderRadius: 10,
+                        minHeight: 38,
                       }}
                     >
-                      <ActiveIcon size={16} weight={active ? "fill" : "regular"} />
+                      <ActiveIcon size={17} weight={active ? "fill" : "regular"} />
                       <span className="truncate flex-1">{item.label}</span>
                       {featured && (
                         <span
                           className="micro tabular flex-shrink-0"
-                          style={{ color: "var(--shade-60)", letterSpacing: "0.4px" }}
+                          style={{
+                            color: "var(--ink)",
+                            letterSpacing: "0.4px",
+                            background: "var(--canvas-light)",
+                            borderRadius: 9999,
+                            padding: "1px 7px",
+                            fontSize: 10,
+                          }}
                         >
                           BI
                         </span>
@@ -333,19 +377,20 @@ export default function DashboardNav({ session }: { session: Session }) {
                 );
               })}
             </ul>
-            {/* Spacer hairline between groups except after the last one */}
-            {gIdx < groups.length - 1 && (
-              <hr
-                aria-hidden="true"
-                style={{
-                  border: 0,
-                  borderTop: "1px solid var(--hairline-light)",
-                  margin: "18px 12px 0",
-                }}
-              />
-            )}
           </div>
         ))}
+
+        {/* Footer tip */}
+        <div style={{ marginTop: "auto", paddingTop: 16 }}>
+          <div
+            className="flex items-center gap-2 micro"
+            style={{ padding: "8px 12px", color: "var(--shade-50)", background: "var(--canvas-cream)", borderRadius: 10 }}
+          >
+            <MagnifyingGlass size={13} />
+            <span>Tekan</span>
+            <kbd style={{ fontFamily: "var(--font-mono)", fontSize: 10, border: "1px solid var(--hairline-light)", borderRadius: 4, padding: "1px 5px", background: "var(--canvas-light)" }}>⌘K</kbd>
+          </div>
+        </div>
       </aside>
     </>
   );

@@ -915,3 +915,69 @@ aside[aria-label] { scrollbar-width: none; }
   .section-marketing { padding: 56px 16px; }
   .section-cinematic { padding: 64px 16px; }
 }
+
+
+/* ============================================================
+   MICRO-INTERACTIONS — added for the modern minimalist UX pass.
+   All respect prefers-reduced-motion.
+   ============================================================ */
+
+/* Sidebar links: subtle slide + bg on hover */
+.ums-navlink {
+  transition: background-color .16s ease, transform .12s ease, color .16s ease;
+}
+.ums-navlink:hover[data-active="false"] {
+  background: var(--canvas-cream) !important;
+}
+.ums-navlink:active { transform: scale(0.98); }
+
+/* Search trigger hover */
+.ums-search-trigger { transition: border-color .16s ease, background-color .16s ease; }
+.ums-search-trigger:hover { border-color: var(--shade-40); background: var(--canvas-light); }
+
+/* Tap feedback for mobile nav + grid items */
+.ums-tap { transition: transform .1s ease, background-color .16s ease; }
+.ums-tap:active { transform: scale(0.94); }
+
+/* Page enter animation */
+@keyframes umsPageEnter {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.ums-page-enter { animation: umsPageEnter .32s cubic-bezier(.16,1,.3,1); }
+
+/* Bottom-sheet + fade for mobile drawer */
+@keyframes umsSheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes umsFadeIn { from { opacity: 0; } to { opacity: 1; } }
+.ums-sheet { animation: umsSheetUp .3s cubic-bezier(.16,1,.3,1); }
+.ums-fade { animation: umsFadeIn .2s ease; }
+
+/* Card hover lift — applies to interactive cards only */
+.ums-hover-lift { transition: transform .18s ease, box-shadow .18s ease; }
+.ums-hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 20px rgba(0,0,0,0.07),
+    0 4px 8px rgba(0,0,0,0.05),
+    0 0 0 1px rgba(0,0,0,0.03);
+}
+
+/* Skeleton shimmer */
+@keyframes umsShimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+.ums-skeleton {
+  background: linear-gradient(90deg, var(--canvas-cream) 25%, var(--hairline-light) 50%, var(--canvas-cream) 75%);
+  background-size: 800px 100%;
+  animation: umsShimmer 1.4s infinite linear;
+  border-radius: 8px;
+}
+
+/* Command palette result row already inline-styled; ensure smooth scrollbars hidden */
+.ums-sidebar::-webkit-scrollbar { width: 0; }
+.ums-sidebar { scrollbar-width: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ums-page-enter, .ums-sheet, .ums-fade, .ums-skeleton, .ums-navlink, .ums-tap, .ums-hover-lift {
+    animation: none !important;
+    transition: none !important;
+  }
+}
