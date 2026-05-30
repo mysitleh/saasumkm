@@ -134,4 +134,11 @@ test.describe("dashboard", () => {
     await page.locator(".card").first().waitFor({ state: "visible" });
     await snap(page, shotPath(VP, 29, "dashboard-notifications"));
   });
+
+  test("30 — Platform Admin", async ({ page }) => {
+    await safeGoto(page, "/admin");
+    await expect(page.locator("h1")).toContainText(/tenant|platform|kelola/i);
+    await page.locator("table").first().waitFor({ state: "visible" });
+    await snap(page, shotPath(VP, 30, "platform-admin"));
+  });
 });

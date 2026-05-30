@@ -2,6 +2,8 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { GLYPH } from "@/lib/glyphs";
+import { hasFeature } from "@/lib/features";
+import FeatureGate from "@/components/FeatureGate";
 import DomainManager from "./DomainManager";
 
 export const dynamic = "force-dynamic";
@@ -12,6 +14,16 @@ export default async function DomainPage() {
   const session = await auth();
   if (!session?.user.tenantId) redirect("/login");
   if (session.user.role !== "OWNER") redirect("/dashboard");
+
+  if (!(await hasFeature(session.user.tenantId, "customDomain"))) {
+    return (
+      <FeatureGate
+        requiredPlan="Business"
+        title="Custom domain toko Anda."
+        description="Pakai domain sendiri (mis. tokoanda.com) dengan SSL otomatis. Tersedia di paket Business atau lewat layanan full."
+      />
+    );
+  }
 
   const tenant = await prisma.tenant.findUnique({
     where: { id: session.user.tenantId },

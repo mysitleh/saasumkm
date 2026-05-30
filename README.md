@@ -108,6 +108,8 @@ Platform SaaS multi-tenant: bangun storefront, terima order via QRIS, jalankan P
 | Template Builder (layout, button, icon, hero, carousel) | ✅ GUI + 4 layout templates |
 | Outlet-level reporting (order ter-assign ke outlet) | ✅ |
 | Daily digest otomatis (WhatsApp + Telegram) | ✅ Per-outlet, idempotent, cron hourly |
+| Plan Business buka semua fitur (full layanan) | ✅ |
+| Platform admin dashboard (kelola semua tenant) | ✅ /admin GUI |
 | Refund / partial fulfillment | ❌ |
 
 ---

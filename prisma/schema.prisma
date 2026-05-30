@@ -53,6 +53,10 @@ model Tenant {
   dailyDigestHour     Int?     @default(21)   // 0-23 WIB, when to send daily digest
   lowStockThreshold   Int?     @default(5)    // alert when product stock <= this
 
+  // ── Platform-level grants ───────────────────────────────────────
+  featureOverrides    String?                 // JSON: { "customDomain": true, ... } — admin "full service" grants
+  isPlatformAdmin     Boolean? @default(false) // tenant whose OWNER can access /admin
+
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

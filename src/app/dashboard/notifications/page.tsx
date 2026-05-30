@@ -2,6 +2,8 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { GLYPH } from "@/lib/glyphs";
+import { hasFeature } from "@/lib/features";
+import FeatureGate from "@/components/FeatureGate";
 import NotificationSettings from "./NotificationSettings";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +12,16 @@ export default async function NotificationsPage() {
   const session = await auth();
   if (!session?.user.tenantId) redirect("/login");
   if (session.user.role !== "OWNER") redirect("/dashboard");
+
+  if (!(await hasFeature(session.user.tenantId, "dailyDigest"))) {
+    return (
+      <FeatureGate
+        requiredPlan="Pro"
+        title="Laporan harian otomatis."
+        description="Kirim ringkasan harian per-outlet via WhatsApp & Telegram otomatis. Tersedia di paket Pro ke atas."
+      />
+    );
+  }
 
   const tenant = await prisma.tenant.findUnique({
     where: { id: session.user.tenantId },

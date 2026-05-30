@@ -113,7 +113,7 @@ function isActivePath(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + "/");
 }
 
-export default function DashboardNav({ session }: { session: Session }) {
+export default function DashboardNav({ session, isAdmin = false }: { session: Session; isAdmin?: boolean }) {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
   const role = session.user.role as Role;
@@ -177,6 +177,21 @@ export default function DashboardNav({ session }: { session: Session }) {
                 style={{ color: "var(--ink)" }}
               >
                 Lihat Toko <ArrowSquareOut size={13} weight="regular" />
+              </Link>
+            )}
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="caption hidden sm:inline-flex items-center gap-1.5"
+                style={{
+                  color: "var(--ink)",
+                  background: "var(--aloe-10)",
+                  padding: "4px 12px",
+                  borderRadius: 9999,
+                  fontWeight: 600,
+                }}
+              >
+                <span className="glyph">{GLYPH.sparkle}</span> Admin
               </Link>
             )}
             <button

@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { resolveTemplate } from "@/lib/template-runtime";
 import { resolveTenantTheme } from "@/lib/theme-runtime";
+import { hasFeature } from "@/lib/features";
+import FeatureGate from "@/components/FeatureGate";
 import { GLYPH } from "@/lib/glyphs";
 import TemplateBuilder from "./TemplateBuilder";
 
@@ -12,6 +14,16 @@ export default async function TemplatePage() {
   const session = await auth();
   if (!session?.user.tenantId) redirect("/login");
   if (session.user.role !== "OWNER") redirect("/dashboard");
+
+  if (!(await hasFeature(session.user.tenantId, "templateBuilder"))) {
+    return (
+      <FeatureGate
+        requiredPlan="Pro"
+        title="Custom storefront, tanpa coding."
+        description="Pilih layout, button, icon, hero, dan carousel untuk storefront Anda. Tersedia di paket Pro ke atas."
+      />
+    );
+  }
 
   const tenant = await prisma.tenant.findUnique({
     where: { id: session.user.tenantId },

@@ -26,6 +26,9 @@ const envSchema = z.object({
   TELEGRAM_BOT_TOKEN: z.string().optional(),
   TELEGRAM_BOT_USERNAME: z.string().optional(),
 
+  // Platform admin allowlist (comma-separated emails)
+  PLATFORM_ADMIN_EMAILS: z.string().optional(),
+
   // Storage
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),

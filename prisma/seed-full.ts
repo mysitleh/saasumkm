@@ -40,6 +40,7 @@ async function main() {
       address: "Jl. Sudirman No. 42, Jakarta Selatan",
       phone: "08123456789",
       themeColor: "green",
+      isPlatformAdmin: true,
       qrisImageUrl: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=QRIS-DEMO-KEDAI-KOPI",
     },
   });
