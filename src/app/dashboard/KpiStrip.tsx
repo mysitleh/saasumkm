@@ -16,38 +16,45 @@ export interface KpiItem {
   accent?: "ink";
 }
 
+const TINTS = ["tint-lavender", "tint-peach", "tint-sky", "tint-mint"];
+
 /**
  * Animated KPI strip — counts up on mount, shows day-over-day delta.
  * Client component so the numbers animate; data comes pre-computed
- * from the server page.
+ * from the server page. Cards use rotating isometricon pastel tints.
  */
 export default function KpiStrip({ items }: { items: KpiItem[] }) {
   return (
     <div className="kpi-grid mb-7">
-      {items.map((k) => (
-        <div key={k.label} className={k.accent === "ink" ? "kpi-card kpi-card-ink ums-hover-lift" : "kpi-card ums-hover-lift"}>
-          <p className="kpi-eyebrow">
-            <span className="glyph">{k.glyph}</span> {k.label}
-          </p>
-          <p className="kpi-value">
-            <AnimatedNumber
-              value={k.value}
-              format={k.format === "rupiah" ? (n) => formatRupiah(n) : undefined}
-            />
-          </p>
-          <div className="flex items-center gap-2 flex-wrap">
-            <p className="kpi-sub">{k.sub}</p>
+      {items.map((k, i) => (
+        <div key={k.label} className={`card-tint ${TINTS[i % TINTS.length]}`} style={{ padding: 20, display: "flex", flexDirection: "column", gap: 12 }}>
+          <div className="flex items-center justify-between">
+            <span className="icon-chip" style={{ width: 38, height: 38, borderRadius: 11, fontSize: 17 }}>
+              <span className="glyph">{k.glyph}</span>
+            </span>
             {k.delta !== undefined && k.delta !== null && (
               <span
                 className="micro tabular"
                 style={{
-                  color: k.delta >= 0 ? (k.accent === "ink" ? "var(--aloe-10)" : "var(--ink)") : "var(--shade-50)",
+                  color: k.delta >= 0 ? "var(--iso-violet-deep)" : "var(--shade-50)",
+                  background: "var(--canvas-light)",
+                  padding: "2px 8px",
+                  borderRadius: 9999,
+                  fontWeight: 600,
                 }}
               >
                 {k.delta >= 0 ? GLYPH.up : GLYPH.down} {Math.abs(k.delta)}%
               </span>
             )}
           </div>
+          <p className="kpi-eyebrow" style={{ color: "var(--shade-60)" }}>{k.label}</p>
+          <p className="kpi-value">
+            <AnimatedNumber
+              value={k.value}
+              format={k.format === "rupiah" ? (n) => formatRupiah(n) : undefined}
+            />
+          </p>
+          <p className="kpi-sub" style={{ color: "var(--shade-60)" }}>{k.sub}</p>
         </div>
       ))}
     </div>
