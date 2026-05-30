@@ -60,9 +60,9 @@ Platform SaaS multi-tenant: bangun storefront, terima order via QRIS, jalankan P
 |:---:|:---:|:---:|
 | ![Theme Builder GUI dengan live preview](tests/screenshots/desktop-auth/26-dashboard-theme-builder.png) | ![Custom Domain dengan DNS instructions](tests/screenshots/desktop-auth/27-dashboard-custom-domain.png) | ![Template Builder — layout, button, icon, hero, carousel](tests/screenshots/desktop-auth/28-dashboard-template-builder.png) |
 
-| Notifikasi (WA + Telegram daily digest) | | |
+| Notifikasi (WA + Telegram daily digest) | Platform Admin (kelola semua tenant) | |
 |:---:|:---:|:---:|
-| ![Daily digest WhatsApp + Telegram config dengan test-send](tests/screenshots/desktop-auth/29-dashboard-notifications.png) | | |
+| ![Daily digest WhatsApp + Telegram config dengan test-send](tests/screenshots/desktop-auth/29-dashboard-notifications.png) | ![Platform admin dashboard — MRR, plan counts, tenant table, manage drawer](tests/screenshots/desktop-auth/30-platform-admin.png) | |
 
 ### Public storefront (1440 × 900)
 
