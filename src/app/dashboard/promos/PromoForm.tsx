@@ -32,7 +32,7 @@ export default function PromoForm() {
         {form.type==="PERCENT" && <div><label className="block text-xs font-medium text-[var(--ink-muted)] mb-1">Maks. Diskon (Rp)</label><input name="maxDiscount" type="number" value={form.maxDiscount} onChange={handleChange} min={0} className="w-full border border-[var(--border-warm)] rounded-[14px] px-3 py-2 text-sm focus:outline-none focus:ring-[3px] focus:ring-[var(--accent)]/20 focus:border-[var(--accent)]" placeholder="Opsional"/></div>}
         <div><label className="block text-xs font-medium text-[var(--ink-muted)] mb-1">Berlaku Sampai</label><input name="expiresAt" type="date" value={form.expiresAt} onChange={handleChange} className="w-full border border-[var(--border-warm)] rounded-[14px] px-3 py-2 text-sm focus:outline-none focus:ring-[3px] focus:ring-[var(--accent)]/20 focus:border-[var(--accent)]"/></div>
       </div>
-      <button type="submit" disabled={loading} className="w-full bg-[var(--accent)] text-white py-2.5 rounded-[999px] font-semibold hover:bg-emerald-700 disabled:opacity-60 flex items-center justify-center gap-2 text-sm">
+      <button type="submit" disabled={loading} className="pill pill-primary pill-sm">
         {loading&&<CircleNotch size={16} className="animate-spin"/>}{loading?"Membuat...":"Buat Promo"}
       </button>
     </form>

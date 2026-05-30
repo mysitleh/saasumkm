@@ -72,7 +72,7 @@ export default function TrackOrderPage() {
           <button
             type="submit"
             disabled={loading || !query.trim()}
-            className="w-full mt-3 bg-[var(--accent)] text-white py-2.5 rounded-[999px] font-semibold hover:bg-emerald-700 disabled:opacity-60 flex items-center justify-center gap-2"
+            className="pill pill-primary w-full mt-3"
           >
             {loading && <CircleNotch size={16} className="animate-spin" />}
             {loading ? "Mencari..." : "Cari Pesanan"}

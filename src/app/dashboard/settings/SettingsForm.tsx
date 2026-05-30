@@ -169,7 +169,7 @@ export default function SettingsForm({ tenant }: { tenant: Tenant }) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-[var(--accent)] text-white py-3 rounded-[999px] font-semibold hover:bg-emerald-700 disabled:opacity-60 flex items-center justify-center gap-2"
+        className="pill pill-primary"
       >
         {loading && <CircleNotch size={16} className="animate-spin" />}
         {loading ? "Menyimpan..." : "Simpan Pengaturan"}

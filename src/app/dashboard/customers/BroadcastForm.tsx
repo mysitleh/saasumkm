@@ -109,7 +109,7 @@ export default function BroadcastForm() {
         <button
           type="submit"
           disabled={loading || !message.trim()}
-          className="bg-[var(--accent)] text-white px-5 py-2 rounded-[999px] text-sm font-semibold hover:bg-emerald-700 disabled:opacity-60 flex items-center gap-2"
+          className="pill pill-primary pill-sm"
         >
           {loading && <CircleNotch size={16} className="animate-spin" />}
           {loading ? "Mengirim..." : "Kirim Broadcast"}

@@ -62,7 +62,7 @@ export default function BulkStockForm({ products }: { products: Product[] }) {
           <button
             onClick={handleSave}
             disabled={loading || !hasChanges}
-            className="bg-[var(--accent)] text-white px-4 py-1.5 rounded-[999px] text-sm font-semibold hover:bg-emerald-700 disabled:opacity-60 flex items-center gap-2"
+            className="pill pill-primary pill-sm"
           >
             {loading ? <CircleNotch size={16} className="animate-spin" /> : <FloppyDisk size={16} />}
             Simpan

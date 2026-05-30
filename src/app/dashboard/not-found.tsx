@@ -12,7 +12,7 @@ export default function DashboardNotFound() {
         </p>
         <Link
           href="/dashboard"
-          className="bg-[var(--accent)] text-white px-5 py-2 rounded-[999px] text-sm font-semibold hover:bg-emerald-700 inline-block"
+          className="pill pill-primary pill-sm inline-flex"
         >
           Kembali ke Dashboard
         </Link>

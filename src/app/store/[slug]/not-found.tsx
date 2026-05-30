@@ -12,7 +12,7 @@ export default function StoreNotFound() {
         </p>
         <Link
           href="/"
-          className="bg-[var(--accent)] text-white px-6 py-2.5 rounded-[999px] text-sm font-semibold hover:bg-emerald-700 inline-block"
+          className="pill pill-primary pill-sm inline-flex"
         >
           Kembali ke Beranda
         </Link>
