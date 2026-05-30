@@ -49,6 +49,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       // without an additional network request.
       style={{ ["--font-display" as string]: "var(--font-sans)" }}
     >
+      <head>
+        {/* Restore collapsed-sidebar preference before paint to avoid flash. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var s=localStorage.getItem('ums-sidebar');if(s==='collapsed')document.documentElement.setAttribute('data-sidebar','collapsed');}catch(e){}`,
+          }}
+        />
+      </head>
       <body className={jakarta.className}>
         <SessionProvider>{children}</SessionProvider>
         <ServiceWorkerRegister />

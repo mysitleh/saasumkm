@@ -18,13 +18,14 @@ import {
   GearSix,
   SignOut,
   ArrowSquareOut,
-  DotsThree,
   X,
   Sparkle,
   Palette,
   Globe,
   BellRinging,
   MagnifyingGlass,
+  CaretLeft,
+  List,
   type Icon,
 } from "@phosphor-icons/react";
 import { UStoreMark } from "@/components/icons";
@@ -133,6 +134,22 @@ export default function DashboardNav({
   const flat = flatten(groups);
   const mobileMain = flat.slice(0, 3);
 
+  // Collapse toggle — flips html[data-sidebar] + persists to localStorage.
+  // We read/write the DOM attribute directly (no React state) so the
+  // pre-hydration script in layout stays the single source of truth and
+  // we avoid setState-in-effect lint + hydration mismatches.
+  function toggleSidebar() {
+    const el = document.documentElement;
+    const collapsed = el.getAttribute("data-sidebar") === "collapsed";
+    if (collapsed) {
+      el.removeAttribute("data-sidebar");
+      try { localStorage.setItem("ums-sidebar", "expanded"); } catch {}
+    } else {
+      el.setAttribute("data-sidebar", "collapsed");
+      try { localStorage.setItem("ums-sidebar", "collapsed"); } catch {}
+    }
+  }
+
   return (
     <>
       <CommandPalette role={role} />
@@ -219,41 +236,31 @@ export default function DashboardNav({
         </div>
       </header>
 
-      {/* Mobile bottom nav */}
-      <nav
-        className="fixed bottom-0 left-0 right-0 z-40 md:hidden"
-        style={{
-          background: "rgba(255,255,255,0.95)",
-          borderTop: "1px solid var(--hairline-light)",
-          backdropFilter: "blur(12px)",
-          paddingBottom: "env(safe-area-inset-bottom, 0px)",
-        }}
-      >
-        <div className="flex">
-          {mobileMain.map((item) => {
-            const ActiveIcon = item.icon;
-            const active = isActivePath(pathname, item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="flex-1 flex flex-col items-center py-2.5 gap-0.5 micro min-w-0 ums-tap"
-                style={{ color: active ? "var(--iso-violet)" : "var(--shade-50)" }}
-              >
-                <ActiveIcon size={20} weight={active ? "fill" : "regular"} />
-                <span className="truncate max-w-full">{item.label}</span>
-              </Link>
-            );
-          })}
-          <button
-            onClick={() => setMoreOpen(!moreOpen)}
-            className="flex-1 flex flex-col items-center py-2.5 gap-0.5 micro ums-tap"
-            style={{ color: moreOpen ? "var(--ink)" : "var(--shade-50)" }}
-          >
-            <DotsThree size={20} weight="bold" />
-            Lainnya
-          </button>
-        </div>
+      {/* Mobile floating nav dock — detached rounded pill */}
+      <nav className="ums-floatnav md:hidden" aria-label="Navigasi mobile">
+        {mobileMain.map((item) => {
+          const ActiveIcon = item.icon;
+          const active = isActivePath(pathname, item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="ums-floatnav-item"
+              data-active={active}
+            >
+              <ActiveIcon size={20} weight={active ? "fill" : "regular"} />
+              <span className="truncate max-w-full" style={{ maxWidth: 54 }}>{item.label}</span>
+            </Link>
+          );
+        })}
+        <button
+          onClick={() => setMoreOpen(!moreOpen)}
+          className="ums-floatnav-fab"
+          data-open={moreOpen}
+          aria-label="Menu lainnya"
+        >
+          {moreOpen ? <X size={20} weight="bold" /> : <List size={20} weight="bold" />}
+        </button>
       </nav>
 
       {/* Mobile "More" drawer */}
@@ -320,13 +327,12 @@ export default function DashboardNav({
         </div>
       )}
 
-      {/* Sidebar desktop — minimalist, separators, active-bar indicator */}
+      {/* Sidebar desktop — collapsible icon rail, separators, active-bar */}
       <aside
-        className="hidden md:flex fixed left-0 flex-col z-30 overflow-y-auto ums-sidebar"
+        className="hidden md:flex fixed left-0 flex-col z-30 overflow-y-auto overflow-x-hidden ums-sidebar"
         style={{
           top: 56,
           bottom: 0,
-          width: 224,
           background: "var(--canvas-light)",
           borderRight: "1px solid var(--hairline-light)",
           padding: "16px 12px 24px",
@@ -336,11 +342,11 @@ export default function DashboardNav({
         {groups.map((group, gIdx) => (
           <div key={group.label} style={{ marginTop: gIdx === 0 ? 0 : 14 }}>
             {/* Group separator + label */}
-            <div className="flex items-center gap-2" style={{ padding: "0 12px", marginBottom: 8 }}>
-              <span className="eyebrow-cap" style={{ color: "var(--shade-40)", fontSize: 10, letterSpacing: "0.9px", whiteSpace: "nowrap" }}>
+            <div className="ums-group-head flex items-center gap-2" style={{ padding: "0 12px", marginBottom: 8 }}>
+              <span className="ums-group-label eyebrow-cap" style={{ color: "var(--shade-40)", fontSize: 10, letterSpacing: "0.9px", whiteSpace: "nowrap" }}>
                 {group.label}
               </span>
-              <span style={{ flex: 1, height: 1, background: "var(--hairline-light)" }} aria-hidden="true" />
+              <span className="ums-group-rule" style={{ flex: 1, height: 1, background: "var(--hairline-light)" }} aria-hidden="true" />
             </div>
 
             <ul className="flex flex-col" style={{ gap: 1 }}>
@@ -363,6 +369,7 @@ export default function DashboardNav({
                           height: 18,
                           borderRadius: 9999,
                           background: "var(--iso-violet)",
+                          zIndex: 1,
                         }}
                       />
                     )}
@@ -383,11 +390,11 @@ export default function DashboardNav({
                         minHeight: 38,
                       }}
                     >
-                      <ActiveIcon size={17} weight={active ? "fill" : "regular"} />
-                      <span className="truncate flex-1">{item.label}</span>
+                      <ActiveIcon size={18} weight={active ? "fill" : "regular"} style={{ flexShrink: 0 }} />
+                      <span className="ums-navlabel truncate flex-1">{item.label}</span>
                       {featured && (
                         <span
-                          className="micro tabular flex-shrink-0"
+                          className="ums-navbadge micro tabular flex-shrink-0"
                           style={{
                             color: "var(--ink)",
                             letterSpacing: "0.4px",
@@ -400,6 +407,8 @@ export default function DashboardNav({
                           BI
                         </span>
                       )}
+                      {/* tooltip shown only when collapsed */}
+                      <span className="ums-tooltip">{item.label}</span>
                     </Link>
                   </li>
                 );
@@ -408,10 +417,14 @@ export default function DashboardNav({
           </div>
         ))}
 
-        {/* Footer tip */}
-        <div style={{ marginTop: "auto", paddingTop: 16 }}>
+        {/* Footer — collapse toggle + shortcut hint */}
+        <div style={{ marginTop: "auto", paddingTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
+          <button onClick={toggleSidebar} className="ums-collapse-btn" aria-label="Perkecil / perbesar sidebar">
+            <CaretLeft size={15} weight="bold" className="ums-collapse-icon" style={{ flexShrink: 0 }} />
+            <span className="ums-footer-text">Perkecil</span>
+          </button>
           <div
-            className="flex items-center gap-2 micro"
+            className="ums-footer-text flex items-center gap-2 micro"
             style={{ padding: "8px 12px", color: "var(--shade-50)", background: "var(--canvas-cream)", borderRadius: 10 }}
           >
             <MagnifyingGlass size={13} />

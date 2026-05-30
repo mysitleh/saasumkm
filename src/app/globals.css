@@ -51,6 +51,8 @@
   --tint-rose: #ffe9ef;
   /* Warm clean surface (slightly warmer than cream) */
   --canvas-warm: #f8f7f4;
+  /* Collapsible sidebar width (toggled via html[data-sidebar]) */
+  --sidebar-w: 224px;
   /* Soft radius scale */
   --radius-card: 20px;
   --radius-card-lg: 24px;
@@ -558,13 +560,14 @@ body {
 }
 @media (min-width: 768px) {
   .page-shell {
-    margin-left: 224px;
+    margin-left: var(--sidebar-w);
     padding-bottom: 24px;
+    transition: margin-left .26s cubic-bezier(.4,0,.2,1);
   }
 }
 @media (min-width: 1920px) {
   .page-shell {
-    max-width: calc(1500px + 224px);
+    max-width: calc(1500px + var(--sidebar-w));
   }
 }
 
@@ -1262,3 +1265,165 @@ aside[aria-label] { scrollbar-width: none; }
   transition: opacity .14s ease, transform .14s ease;
 }
 .notif-row:hover .notif-go { opacity: 1; transform: translateX(0); color: var(--iso-violet); }
+
+/* ============================================================
+   COLLAPSIBLE SIDEBAR — icon-only "rail" mode.
+   Toggled by html[data-sidebar="collapsed"] (set pre-hydration
+   from localStorage, so no flash / no setState-in-effect). The
+   rail is 72px; labels + group headers fade out; on hover a
+   single item can show a floating tooltip.
+   ============================================================ */
+:root { --sidebar-w: 224px; }
+html[data-sidebar="collapsed"] { --sidebar-w: 76px; }
+
+.ums-sidebar {
+  width: var(--sidebar-w);
+  transition: width .26s cubic-bezier(.4,0,.2,1);
+}
+
+/* The ticker shell aligns with content; follows the sidebar width. */
+.ticker-shell {
+  transition: margin-left .26s cubic-bezier(.4,0,.2,1);
+}
+@media (min-width: 768px) {
+  .ticker-shell { margin-left: var(--sidebar-w); }
+}
+
+/* Collapsed: center icons, hide labels/group-text/badges/footer text. */
+html[data-sidebar="collapsed"] .ums-navlink {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+html[data-sidebar="collapsed"] .ums-navlabel,
+html[data-sidebar="collapsed"] .ums-group-label,
+html[data-sidebar="collapsed"] .ums-navbadge,
+html[data-sidebar="collapsed"] .ums-footer-text {
+  display: none;
+}
+/* Collapsed group divider becomes a centered short rule. */
+html[data-sidebar="collapsed"] .ums-group-head {
+  justify-content: center;
+  padding: 0;
+  margin-bottom: 8px;
+}
+html[data-sidebar="collapsed"] .ums-group-rule {
+  flex: none;
+  width: 20px;
+}
+
+/* Tooltip on collapsed hover */
+.ums-navlink { position: relative; }
+.ums-tooltip {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-4px);
+  white-space: nowrap;
+  background: var(--ink);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .14s ease, transform .14s ease;
+  z-index: 50;
+  box-shadow: 0 6px 16px -6px rgba(0,0,0,0.3);
+}
+.ums-tooltip::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  background: var(--ink);
+  border-radius: 1px;
+}
+/* Only show tooltips when collapsed. */
+html[data-sidebar="collapsed"] .ums-navlink:hover .ums-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Collapse toggle button (sits at sidebar bottom) */
+.ums-collapse-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--canvas-cream);
+  border: 1px solid var(--hairline-light);
+  color: var(--shade-60);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease;
+}
+.ums-collapse-btn:hover { background: var(--iso-violet-soft); color: var(--iso-violet-deep); }
+html[data-sidebar="collapsed"] .ums-collapse-btn { justify-content: center; padding-left: 0; padding-right: 0; }
+.ums-collapse-icon { transition: transform .26s cubic-bezier(.4,0,.2,1); }
+html[data-sidebar="collapsed"] .ums-collapse-icon { transform: rotate(180deg); }
+
+/* ============================================================
+   FLOATING MOBILE NAV — replaces the edge-to-edge bottom bar
+   with a detached, rounded "pill dock" that hovers above the
+   content with a soft shadow (pro / modern).
+   ============================================================ */
+.ums-floatnav {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 9999px;
+  background: rgba(255,255,255,0.86);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid var(--hairline-light);
+  box-shadow: 0 12px 30px -8px rgba(108,76,241,0.28), 0 4px 10px -4px rgba(0,0,0,0.12);
+}
+.ums-floatnav-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 60px;
+  height: 52px;
+  border-radius: 9999px;
+  color: var(--shade-50);
+  font-size: 10px;
+  font-weight: 600;
+  transition: background-color .15s ease, color .15s ease, transform .12s ease;
+}
+.ums-floatnav-item:active { transform: scale(0.92); }
+.ums-floatnav-item[data-active="true"] {
+  background: var(--iso-violet);
+  color: #fff;
+  box-shadow: 0 6px 14px -4px rgba(108,76,241,0.6);
+}
+.ums-floatnav-fab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 9999px;
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: transform .15s ease, background-color .15s ease;
+}
+.ums-floatnav-fab:active { transform: scale(0.92); }
+.ums-floatnav-fab[data-open="true"] { background: var(--iso-violet); }

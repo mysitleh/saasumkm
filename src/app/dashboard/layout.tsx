@@ -26,7 +26,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         */}
         <main className="px-4 py-6 md:px-8 md:py-8 lg:px-10 lg:py-10 xl:px-12 min-w-0 overflow-x-hidden ums-page-enter">
           {reminders.items.length > 0 && (
-            <div className="ticker-shell md:ml-[224px] mb-6">
+            <div className="ticker-shell mb-6">
               <MarqueeTicker
                 items={reminders.items}
                 tag={reminders.hasAlert ? "Perlu Aksi" : "Info"}

@@ -141,4 +141,14 @@ test.describe("dashboard", () => {
     await page.locator("table").first().waitFor({ state: "visible" });
     await snap(page, shotPath(VP, 30, "platform-admin"));
   });
+
+  test("31 — Sidebar collapsed (icon rail)", async ({ page }) => {
+    // Pre-set the collapsed preference before the app loads.
+    await page.addInitScript(() => {
+      try { localStorage.setItem("ums-sidebar", "collapsed"); } catch {}
+    });
+    await safeGoto(page, "/dashboard");
+    await expect(page.locator("h1")).toContainText(/halo|selamat/i);
+    await snap(page, shotPath(VP, 31, "dashboard-sidebar-collapsed"));
+  });
 });
