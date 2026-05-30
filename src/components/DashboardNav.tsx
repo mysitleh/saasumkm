@@ -30,6 +30,8 @@ import {
 import { UStoreMark } from "@/components/icons";
 import { GLYPH } from "@/lib/glyphs";
 import CommandPalette from "@/components/ui/CommandPalette";
+import NotificationBell from "@/components/NotificationBell";
+import type { TickerItem } from "@/components/MarqueeTicker";
 import type { Session } from "next-auth";
 
 type Role = "OWNER" | "CASHIER";
@@ -113,7 +115,17 @@ function isActivePath(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + "/");
 }
 
-export default function DashboardNav({ session, isAdmin = false }: { session: Session; isAdmin?: boolean }) {
+export default function DashboardNav({
+  session,
+  isAdmin = false,
+  notifications = [],
+  alertCount = 0,
+}: {
+  session: Session;
+  isAdmin?: boolean;
+  notifications?: TickerItem[];
+  alertCount?: number;
+}) {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
   const role = session.user.role as Role;
@@ -179,6 +191,7 @@ export default function DashboardNav({ session, isAdmin = false }: { session: Se
                 Lihat Toko <ArrowSquareOut size={13} weight="regular" />
               </Link>
             )}
+            <NotificationBell items={notifications} alertCount={alertCount} />
             {isAdmin && (
               <Link
                 href="/admin"

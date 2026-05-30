@@ -13,11 +13,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const reminders = session.user.tenantId
     ? await buildReminders(session.user.tenantId)
     : { items: [], hasAlert: false };
+  const alertCount = reminders.items.filter((i) => i.alert).length;
   return (
     <ToastProvider>
       <ToastKeyframes />
       <div className="min-h-screen overflow-x-hidden" style={{ background: "linear-gradient(180deg, var(--canvas-warm) 0%, var(--canvas-cream) 40%)" }}>
-        <DashboardNav session={session} isAdmin={admin} />
+        <DashboardNav session={session} isAdmin={admin} notifications={reminders.items} alertCount={alertCount} />
         {/*
           Full-bleed main: padding scales by breakpoint, no inner max-width
           cap. `min-w-0` prevents long Rupiah numbers / wide tables from
