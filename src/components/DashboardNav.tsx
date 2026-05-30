@@ -184,8 +184,8 @@ export default function DashboardNav({ session, isAdmin = false }: { session: Se
                 href="/admin"
                 className="caption hidden sm:inline-flex items-center gap-1.5"
                 style={{
-                  color: "var(--ink)",
-                  background: "var(--aloe-10)",
+                  color: "var(--on-primary)",
+                  background: "var(--iso-violet)",
                   padding: "4px 12px",
                   borderRadius: 9999,
                   fontWeight: 600,
@@ -225,7 +225,7 @@ export default function DashboardNav({ session, isAdmin = false }: { session: Se
                 key={item.href}
                 href={item.href}
                 className="flex-1 flex flex-col items-center py-2.5 gap-0.5 micro min-w-0 ums-tap"
-                style={{ color: active ? "var(--ink)" : "var(--shade-50)" }}
+                style={{ color: active ? "var(--iso-violet)" : "var(--shade-50)" }}
               >
                 <ActiveIcon size={20} weight={active ? "fill" : "regular"} />
                 <span className="truncate max-w-full">{item.label}</span>
@@ -285,9 +285,9 @@ export default function DashboardNav({ session, isAdmin = false }: { session: Se
                           className="flex flex-col items-center justify-center gap-1.5 micro text-center min-w-0 ums-tap"
                           style={{
                             padding: "12px 6px",
-                            background: active ? "var(--aloe-10)" : "transparent",
-                            color: "var(--ink)",
-                            border: active ? "1px solid var(--aloe-10)" : "1px solid var(--hairline-light)",
+                            background: active ? "var(--iso-violet-soft)" : "transparent",
+                            color: active ? "var(--iso-violet-deep)" : "var(--ink)",
+                            border: active ? "1px solid var(--iso-violet)" : "1px solid var(--hairline-light)",
                             borderRadius: 12,
                             minHeight: 72,
                             fontSize: 11,
@@ -349,7 +349,7 @@ export default function DashboardNav({ session, isAdmin = false }: { session: Se
                           width: 3,
                           height: 18,
                           borderRadius: 9999,
-                          background: "var(--ink)",
+                          background: "var(--iso-violet)",
                         }}
                       />
                     )}
@@ -360,11 +360,11 @@ export default function DashboardNav({ session, isAdmin = false }: { session: Se
                       style={{
                         padding: "9px 12px",
                         background: active
-                          ? "var(--aloe-10)"
+                          ? "var(--iso-violet-soft)"
                           : featured
-                            ? "var(--pistachio-10)"
+                            ? "var(--tint-lemon)"
                             : "transparent",
-                        color: "var(--ink)",
+                        color: active ? "var(--iso-violet-deep)" : "var(--ink)",
                         fontWeight: active ? 600 : 500,
                         borderRadius: 10,
                         minHeight: 38,

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { formatRupiah } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { GLYPH } from "@/lib/glyphs";
+import StatTile from "@/components/StatTile";
 
 export const dynamic = "force-dynamic";
 
@@ -32,9 +33,9 @@ export default async function LoyaltyPage() {
       </div>
 
       <div className="kpi-grid-3 mb-6">
-        <Stat glyph={GLYPH.premium} label="Member loyalty" value={String(totalCards)} accent="aloe" />
-        <Stat glyph={GLYPH.sparkle} label="Total poin beredar" value={String(totalPointsIssued._sum.points ?? 0)} />
-        <Stat glyph={GLYPH.diamond} label="Total belanja member" value={formatRupiah(totalPointsIssued._sum.totalSpent ?? 0)} />
+        <StatTile index={0} glyph={GLYPH.premium} label="Member loyalty" value={String(totalCards)} />
+        <StatTile index={1} glyph={GLYPH.sparkle} label="Total poin beredar" value={String(totalPointsIssued._sum.points ?? 0)} />
+        <StatTile index={2} glyph={GLYPH.diamond} label="Total belanja member" value={formatRupiah(totalPointsIssued._sum.totalSpent ?? 0)} />
       </div>
 
       <section className="list-card">
@@ -85,15 +86,6 @@ export default async function LoyaltyPage() {
         (1 poin per Rp 10.000), dan dapat memeriksa poin di halaman <span style={{ color: "var(--ink)" }}>Lacak Pesanan</span> toko Anda.
         Redeem poin akan tersedia di update berikutnya.
       </p>
-    </div>
-  );
-}
-
-function Stat({ glyph, label, value, accent }: { glyph: string; label: string; value: string; accent?: "aloe" }) {
-  return (
-    <div className={accent === "aloe" ? "kpi-card kpi-card-aloe" : "kpi-card"}>
-      <p className="kpi-eyebrow"><span className="glyph">{glyph}</span> {label}</p>
-      <p className="kpi-value">{value}</p>
     </div>
   );
 }

@@ -11,7 +11,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <ToastProvider>
       <ToastKeyframes />
-      <div className="min-h-screen overflow-x-hidden" style={{ background: "var(--canvas-cream)" }}>
+      <div className="min-h-screen overflow-x-hidden" style={{ background: "linear-gradient(180deg, var(--canvas-warm) 0%, var(--canvas-cream) 40%)" }}>
         <DashboardNav session={session} isAdmin={admin} />
         {/*
           Full-bleed main: padding scales by breakpoint, no inner max-width

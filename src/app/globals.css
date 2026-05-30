@@ -721,11 +721,17 @@ body {
   color: var(--shade-50);
 }
 .empty-state-glyph {
-  display: block;
-  font-size: clamp(24px, 2.4vw, 32px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: var(--iso-violet-soft);
+  color: var(--iso-violet);
+  font-size: clamp(24px, 2.4vw, 30px);
   line-height: 1;
-  color: var(--shade-30);
-  margin-bottom: 12px;
+  margin: 0 auto 16px;
 }
 
 /* ---- Status badge (single source for order statuses) -------- */

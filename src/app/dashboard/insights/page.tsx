@@ -7,6 +7,7 @@ import { formatRupiah } from "@/lib/utils";
 import { GLYPH } from "@/lib/glyphs";
 import InsightChart from "@/components/InsightChart";
 import HeatmapGrid from "@/components/HeatmapGrid";
+import StatTile from "@/components/StatTile";
 
 export const dynamic = "force-dynamic";
 
@@ -71,10 +72,10 @@ export default async function InsightsPage() {
 
       {/* KPI strip */}
       <div className="kpi-grid mb-8">
-        <KpiCard glyph={GLYPH.sparkle} label="Forecast 7 hari" value={formatRupiah(data.kpi.forecastNext7d)} caption="Prediksi Holt-smoothing" />
-        <KpiCard glyph={GLYPH.premium} label="Champions" value={String(data.kpi.championsCount)} caption="Pelanggan inti" accent="aloe" />
-        <KpiCard glyph={GLYPH.circleRing} label="Berisiko churn" value={String(data.kpi.atRiskCount)} caption="At-Risk + Hibernating" />
-        <KpiCard glyph={GLYPH.hexFilled} label="Reorder sekarang" value={String(data.kpi.reorderNow)} caption={`${data.kpi.deadStock} dead-stock`} />
+        <StatTile index={0} glyph={GLYPH.sparkle} label="Forecast 7 hari" value={formatRupiah(data.kpi.forecastNext7d)} caption="Prediksi Holt-smoothing" />
+        <StatTile index={1} glyph={GLYPH.premium} label="Champions" value={String(data.kpi.championsCount)} caption="Pelanggan inti" />
+        <StatTile index={2} glyph={GLYPH.circleRing} label="Berisiko churn" value={String(data.kpi.atRiskCount)} caption="At-Risk + Hibernating" />
+        <StatTile index={3} glyph={GLYPH.hexFilled} label="Reorder sekarang" value={String(data.kpi.reorderNow)} caption={`${data.kpi.deadStock} dead-stock`} />
       </div>
 
       {/* Forecast chart */}
@@ -328,16 +329,6 @@ export default async function InsightsPage() {
         <span className="glyph">{GLYPH.reference}</span> Metodologi: RFM mengikuti Hughes (1996); forecast pakai Holt double-exponential smoothing
         (α=0.4, β=0.2); affinity dihitung dari co-occurrence pada `order_items` dengan minimum support 2; cohort menggunakan signup-month per pelanggan unik.
       </p>
-    </div>
-  );
-}
-
-function KpiCard({ glyph, label, value, caption, accent }: { glyph: string; label: string; value: string; caption: string; accent?: "aloe" }) {
-  return (
-    <div className={accent === "aloe" ? "kpi-card kpi-card-aloe" : "kpi-card"}>
-      <p className="kpi-eyebrow"><span className="glyph">{glyph}</span> {label}</p>
-      <p className="kpi-value" title={value}>{value}</p>
-      <p className="kpi-sub">{caption}</p>
     </div>
   );
 }

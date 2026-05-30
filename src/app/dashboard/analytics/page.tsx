@@ -6,6 +6,7 @@ import RevenueChart from "@/components/RevenueChart";
 import Link from "next/link";
 import { hasFeature } from "@/lib/features";
 import { GLYPH } from "@/lib/glyphs";
+import StatTile from "@/components/StatTile";
 
 export const dynamic = "force-dynamic";
 
@@ -87,9 +88,9 @@ export default async function AnalyticsPage() {
       </div>
 
       <div className="kpi-grid-3 mb-6">
-        <Stat glyph={GLYPH.diamond} label="Omzet 14 hari" value={formatRupiah(data.revenue)} />
-        <Stat glyph={GLYPH.hexFilled} label="Order paid" value={String(data.paidCount)} />
-        <Stat glyph={GLYPH.lozenge} label="Rata-rata harian" value={formatRupiah(Math.round(avgPerDay))} />
+        <StatTile index={0} glyph={GLYPH.diamond} label="Omzet 14 hari" value={formatRupiah(data.revenue)} />
+        <StatTile index={1} glyph={GLYPH.hexFilled} label="Order paid" value={String(data.paidCount)} />
+        <StatTile index={2} glyph={GLYPH.lozenge} label="Rata-rata harian" value={formatRupiah(Math.round(avgPerDay))} />
       </div>
 
       <section className="card mb-6">
@@ -124,15 +125,6 @@ export default async function AnalyticsPage() {
           </ul>
         )}
       </section>
-    </div>
-  );
-}
-
-function Stat({ glyph, label, value }: { glyph: string; label: string; value: string }) {
-  return (
-    <div className="kpi-card">
-      <p className="kpi-eyebrow"><span className="glyph">{glyph}</span> {label}</p>
-      <p className="kpi-value">{value}</p>
     </div>
   );
 }
