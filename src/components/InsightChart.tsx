@@ -46,9 +46,7 @@ export default function InsightChart({ data }: { data: ForecastPoint[] }) {
           const isPred = d.predicted;
           return (
             <g key={d.day}>
-              <title>
-                {d.day} — {formatRupiah(d.total)}{isPred ? " (forecast)" : ""}
-              </title>
+              <title>{`${d.day} — ${formatRupiah(d.total)}${isPred ? " (forecast)" : ""}`}</title>
               <rect
                 x={x}
                 y={y}

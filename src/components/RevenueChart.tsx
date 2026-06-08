@@ -45,9 +45,7 @@ export default function RevenueChart({ data }: { data: DailyPoint[] }) {
           const isLast = i === lastIdx;
           return (
             <g key={d.day}>
-              <title>
-                {d.day} — {formatRupiah(d.total)} ({d.count} order)
-              </title>
+              <title>{`${d.day} — ${formatRupiah(d.total)} (${d.count} order)`}</title>
               <rect
                 x={x}
                 y={y}

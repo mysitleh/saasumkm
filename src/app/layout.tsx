@@ -44,6 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="id"
       className={jakarta.variable}
+      data-scroll-behavior="smooth"
       // Alias --font-display to the same Inter variable so design.md utility
       // classes (.display-xxl, .display-md, etc.) get the thin-weight cut
       // without an additional network request.
