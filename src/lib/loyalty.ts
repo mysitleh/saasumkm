@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { tierFromSpent, applyTierMultiplier } from "@/lib/loyalty-tiers";
 
 /**
  * Loyalty system: 1 poin per Rp 10.000 belanja.
@@ -9,26 +10,40 @@ const REDEEM_RATE = 100; // 100 poin = Rp 10.000 diskon
 
 /**
  * Hitung poin yang didapat dari sebuah order.
+ * Guard: total non-finite / <= 0 (refund, data error) tidak pernah
+ * mengurangi poin pelanggan — selalu kembalikan 0.
  */
 export function calculatePoints(orderTotal: number): number {
+  if (!Number.isFinite(orderTotal) || orderTotal <= 0) return 0;
   return Math.floor(orderTotal / 10_000) * POINTS_PER_10K;
 }
 
 /**
  * Hitung nilai diskon dari poin yang di-redeem.
+ * Guard: poin non-finite / <= 0 menghasilkan diskon 0.
  */
 export function pointsToDiscount(points: number): number {
+  if (!Number.isFinite(points) || points <= 0) return 0;
   return Math.floor(points / REDEEM_RATE) * 10_000;
 }
 
 /**
  * Tambah poin ke loyalty card customer setelah order paid.
  * Buat card baru jika belum ada.
+ * Tier multiplier diterapkan berdasarkan totalSpent customer.
  */
 export async function earnPoints(tenantId: string, customerPhone: string, customerName: string, orderTotal: number, orderNumber: string) {
   if (!customerPhone) return null;
-  const points = calculatePoints(orderTotal);
-  if (points <= 0) return null;
+  const basePoints = calculatePoints(orderTotal);
+  if (basePoints <= 0) return null;
+
+  // Cek existing card untuk tentukan tier dari totalSpent saat ini.
+  const existing = await prisma.loyaltyCard.findUnique({
+    where: { tenantId_customerPhone: { tenantId, customerPhone } },
+  });
+  const currentSpent = existing?.totalSpent ?? 0;
+  const tier = tierFromSpent(currentSpent);
+  const points = applyTierMultiplier(basePoints, tier.tier);
 
   const card = await prisma.loyaltyCard.upsert({
     where: { tenantId_customerPhone: { tenantId, customerPhone } },
@@ -53,11 +68,11 @@ export async function earnPoints(tenantId: string, customerPhone: string, custom
       cardId: card.id,
       type: "EARN",
       points,
-      reason: `Order ${orderNumber}`,
+      reason: `Order ${orderNumber} (${tier.label} ${tier.pointMultiplier}x)`,
     },
   });
 
-  return { cardId: card.id, pointsEarned: points, totalPoints: card.points + points };
+  return { cardId: card.id, pointsEarned: points, totalPoints: card.points + points, tier: tier.tier };
 }
 
 /**
