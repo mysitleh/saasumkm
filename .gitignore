@@ -59,3 +59,6 @@ tests/screenshots/*
 !tests/screenshots/cinematic-wide/
 tests/.playwright/
 tests/e2e/.auth/
+
+# Large binary report exports (keep out of git)
+docs/*.docx
