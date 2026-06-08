@@ -33,6 +33,8 @@ export default function PosClient({ products, categories, tenantSlug, tenantName
   const [customerName, setCustomerName] = useState("Walk-in");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
+  const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
+  const [receipt, setReceipt] = useState<{ total: number; tax: { base: number; tax: number; total: number; rate: number } | null } | null>(null);
   const [search, setSearch] = useState("");
 
   const filtered = products.filter((p) => {
@@ -80,6 +82,8 @@ export default function PosClient({ products, categories, tenantSlug, tenantName
       const data = await res.json();
       if (res.ok) {
         setSuccess(data.orderNumber);
+        setSuccessOrderId(data.orderId);
+        setReceipt({ total: data.total ?? total, tax: data.tax ?? null });
         setCart([]);
         setCustomerName("Walk-in");
       } else {
@@ -100,10 +104,27 @@ export default function PosClient({ products, categories, tenantSlug, tenantName
           <p className="eyebrow-cap mb-2"><span className="glyph">{GLYPH.endMark}</span> Berhasil</p>
           <h2 className="display-md mb-3" style={{ fontSize: 28 }}>Order Berhasil!</h2>
           <p className="heading-md tabular mb-2" style={{ color: "var(--ink)" }}>{success}</p>
-          <p className="caption tabular mb-6" style={{ color: "var(--shade-50)" }}>Total: {formatRupiah(total)}</p>
-          <button onClick={() => setSuccess(null)} className="pill pill-primary w-full">
+          {receipt?.tax ? (
+            <div className="mb-6" style={{ borderTop: "1px solid var(--hairline-light)", paddingTop: 12, marginTop: 4 }}>
+              <div className="flex justify-between caption tabular" style={{ color: "var(--shade-50)" }}>
+                <span>DPP</span><span>{formatRupiah(receipt.tax.base)}</span>
+              </div>
+              <div className="flex justify-between caption tabular" style={{ color: "var(--shade-50)" }}>
+                <span>PPN ({Math.round(receipt.tax.rate * 100)}%)</span><span>{formatRupiah(receipt.tax.tax)}</span>
+              </div>
+              <div className="flex justify-between body-strong tabular mt-1" style={{ color: "var(--ink)" }}>
+                <span>Total</span><span>{formatRupiah(receipt.tax.total)}</span>
+              </div>
+            </div>
+          ) : (
+            <p className="caption tabular mb-6" style={{ color: "var(--shade-50)" }}>Total: {formatRupiah(receipt?.total ?? total)}</p>
+          )}
+          <button onClick={() => { setSuccess(null); setSuccessOrderId(null); setReceipt(null); }} className="pill pill-primary w-full">
             Order Baru
           </button>
+          <Link href={`/dashboard/orders/${successOrderId}`} className="pill pill-ghost w-full mt-2 text-center" style={{ display: "block" }}>
+            Buka Order & Cetak Struk
+          </Link>
         </div>
       </div>
     );
