@@ -40,6 +40,9 @@ export default function PosClient({ products, categories, tenantSlug, tenantName
   const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
   const [receipt, setReceipt] = useState<{ total: number; tax: { base: number; tax: number; total: number; rate: number } | null } | null>(null);
   const [search, setSearch] = useState("");
+  const [promoCode, setPromoCode] = useState("");
+  const [promoResult, setPromoResult] = useState<{ promoId: string; discount: number; label: string } | null>(null);
+  const [promoError, setPromoError] = useState("");
 
   const filtered = products.filter((p) => {
     const matchCat = selectedCat === "all" || p.category === selectedCat;
@@ -48,7 +51,19 @@ export default function PosClient({ products, categories, tenantSlug, tenantName
   });
 
   const total = cart.reduce((s, i) => s + i.product.price * i.quantity, 0);
+  const afterDiscount = Math.max(0, total - (promoResult?.discount ?? 0));
   const itemCount = cart.reduce((s, i) => s + i.quantity, 0);
+
+  async function applyPromo() {
+    if (!promoCode.trim()) return;
+    setPromoError("");
+    try {
+      const res = await fetch(`/api/store/${tenantSlug}/promo?code=${encodeURIComponent(promoCode)}&subtotal=${total}`);
+      const data = await res.json();
+      if (res.ok) { setPromoResult(data); setPromoError(""); }
+      else { setPromoResult(null); setPromoError(data.error || "Kode promo tidak valid."); }
+    } catch { setPromoError("Gagal validasi promo."); }
+  }
 
   function addToCart(p: Product) {
     setCart((prev) => {
@@ -81,6 +96,7 @@ export default function PosClient({ products, categories, tenantSlug, tenantName
             price: i.product.price,
             quantity: i.quantity,
           })),
+          promoId: promoResult?.promoId ?? null,
         }),
       });
       const data = await res.json();
@@ -90,6 +106,9 @@ export default function PosClient({ products, categories, tenantSlug, tenantName
         setReceipt({ total: data.total ?? total, tax: data.tax ?? null });
         setCart([]);
         setCustomerName("Walk-in");
+        setPromoCode("");
+        setPromoResult(null);
+        setPromoError("");
       } else {
         alert(data.error || "Gagal membuat order.");
       }
@@ -242,8 +261,40 @@ export default function PosClient({ products, categories, tenantSlug, tenantName
         </div>
 
         <div style={{ borderTop: "1px solid var(--hairline-light)", padding: 16 }}>
+          {cart.length > 0 && (
+            <div className="mb-3">
+              <div className="flex gap-2">
+                <input
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                  placeholder="Kode promo"
+                  className="input"
+                  style={{ minHeight: 34, fontSize: 13, padding: "6px 12px", flex: 1 }}
+                  disabled={!!promoResult}
+                />
+                {promoResult ? (
+                  <button
+                    onClick={() => { setPromoResult(null); setPromoCode(""); setPromoError(""); }}
+                    className="pill pill-ghost pill-sm"
+                  >
+                    Hapus
+                  </button>
+                ) : (
+                  <button onClick={applyPromo} className="pill pill-ghost pill-sm" disabled={!promoCode.trim()}>
+                    Pakai
+                  </button>
+                )}
+              </div>
+              {promoError && <p className="micro mt-1" style={{ color: "var(--danger, #c0392b)" }}>{promoError}</p>}
+              {promoResult && (
+                <div className="flex justify-between caption tabular mt-2" style={{ color: "var(--aloe-70, var(--ink))" }}>
+                  <span>{promoResult.label}</span><span>−{formatRupiah(promoResult.discount)}</span>
+                </div>
+              )}
+            </div>
+          )}
           {taxEnabled && cart.length > 0 ? (() => {
-            const b = calculatePpn(total, taxMode, taxRate);
+            const b = calculatePpn(afterDiscount, taxMode, taxRate);
             return (
               <div className="mb-2" style={{ paddingBottom: 8, borderBottom: "1px dashed var(--hairline-light)" }}>
                 <div className="flex justify-between caption tabular" style={{ color: "var(--shade-50)" }}>
@@ -257,7 +308,7 @@ export default function PosClient({ products, categories, tenantSlug, tenantName
           })() : null}
           <div className="flex justify-between mb-3">
             <span className="body-strong">Total</span>
-            <span className="body-strong tabular">{formatRupiah(taxEnabled && cart.length > 0 ? calculatePpn(total, taxMode, taxRate).total : total)}</span>
+            <span className="body-strong tabular">{formatRupiah(taxEnabled && cart.length > 0 ? calculatePpn(afterDiscount, taxMode, taxRate).total : afterDiscount)}</span>
           </div>
           <button
             onClick={submitOrder}
