@@ -4,6 +4,8 @@ import { formatRupiah, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/ut
 import { cn } from "@/lib/utils";
 import { ShoppingBag, Package, MapPin, Phone, ChatText, CheckCircle, Clock } from "@phosphor-icons/react/dist/ssr";
 import type { Metadata } from "next";
+import { calculatePpn, type TaxMode } from "@/lib/tax";
+import ReceiptShareButton from "./ReceiptShareButton";
 
 interface Props {
   params: Promise<{ slug: string; orderNumber: string }>;
@@ -29,6 +31,11 @@ export default async function InvoicePage({ params }: Props) {
   if (!order) notFound();
 
   const isPaid = ["PAID_MANUAL", "PROCESSING", "COMPLETED"].includes(order.status);
+
+  // PPN breakdown jika tenant aktifkan tax
+  const tax = tenant.taxEnabled
+    ? calculatePpn(order.total, (tenant.taxMode as TaxMode) ?? "EXCLUSIVE", tenant.taxRate ?? 0.11)
+    : null;
 
   return (
     <div className="min-h-screen bg-[var(--surface-cream)] py-6 px-4">
@@ -132,12 +139,27 @@ export default async function InvoicePage({ params }: Props) {
                 <span>-{formatRupiah(order.discountAmount)}</span>
               </div>
             )}
+            {tax && (
+              <>
+                <div className="flex justify-between text-sm text-[var(--ink-muted)]">
+                  <span>DPP (sebelum PPN)</span>
+                  <span>{formatRupiah(tax.base)}</span>
+                </div>
+                <div className="flex justify-between text-sm text-[var(--ink-muted)]">
+                  <span>PPN ({Math.round((tenant.taxRate ?? 0.11) * 100)}%)</span>
+                  <span>{formatRupiah(tax.tax)}</span>
+                </div>
+              </>
+            )}
             <div className="flex justify-between font-bold text-base pt-1 border-t border-[var(--border-warm)]">
               <span>Total</span>
               <span className="text-[var(--accent)]">{formatRupiah(order.total)}</span>
             </div>
           </div>
         </div>
+
+        {/* Share receipt */}
+        <ReceiptShareButton slug={slug} orderId={order.id} />
 
         {/* Status */}
         <div className="bg-white rounded-[20px] p-4 shadow-sm text-center">
