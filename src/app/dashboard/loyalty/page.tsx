@@ -4,6 +4,7 @@ import { formatRupiah } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { GLYPH } from "@/lib/glyphs";
 import StatTile from "@/components/StatTile";
+import { tierFromSpent } from "@/lib/loyalty-tiers";
 
 export const dynamic = "force-dynamic";
 
@@ -72,6 +73,26 @@ export default async function LoyaltyPage() {
                   </div>
                 </div>
                 <div className="text-right ml-3 flex-shrink-0">
+                  {(() => {
+                    const tier = tierFromSpent(card.totalSpent);
+                    return (
+                      <span
+                        className="caption"
+                        style={{
+                          display: "inline-block",
+                          padding: "1px 8px",
+                          borderRadius: 9999,
+                          fontSize: 11,
+                          fontWeight: 600,
+                          color: tier.color,
+                          background: `${tier.color}1a`,
+                          marginBottom: 2,
+                        }}
+                      >
+                        {tier.label}
+                      </span>
+                    );
+                  })()}
                   <p className="body-strong tabular">{card.points} <span style={{ color: "var(--shade-50)", fontWeight: 420 }}>poin</span></p>
                   <p className="micro tabular" style={{ color: "var(--shade-50)" }}>{formatRupiah(card.totalSpent)}</p>
                 </div>
