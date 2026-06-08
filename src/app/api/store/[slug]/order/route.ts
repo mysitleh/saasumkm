@@ -6,6 +6,7 @@ import { withErrorHandler, badRequest, notFound, tooMany } from "@/lib/api-handl
 import { rateLimit, ipFromRequest } from "@/lib/rate-limit";
 import { sendWhatsApp, buildNewOrderMessage } from "@/lib/notifications";
 import { hasFeature } from "@/lib/features";
+import { calculatePpn, type TaxMode } from "@/lib/tax";
 import { logger } from "@/lib/logger";
 
 const schema = z.object({
@@ -114,10 +115,17 @@ export const POST = withErrorHandler<Ctx>(async (req, { params }) => {
       },
     });
     for (const item of itemsForCreate) {
-      await tx.product.update({
-        where: { id: item.productId },
+      // Atomic guarded decrement: only succeeds if stock is still sufficient
+      // at write time. Prevents overselling under concurrent checkout of the
+      // same product (the earlier findMany check is racy on its own).
+      const res = await tx.product.updateMany({
+        where: { id: item.productId, stock: { gte: item.quantity } },
         data: { stock: { decrement: item.quantity } },
       });
+      if (res.count === 0) {
+        // Another order claimed the stock between our read and this write.
+        throw badRequest(`Stok "${item.name}" tidak cukup, silakan kurangi jumlah.`);
+      }
     }
     await tx.auditLog.create({
       data: { tenantId: tenant.id, action: "CREATE_ORDER", entity: "Order", entityId: o.id, meta: JSON.stringify({ total }) },
@@ -134,10 +142,18 @@ export const POST = withErrorHandler<Ctx>(async (req, { params }) => {
     ).catch((e) => logger.warn("WA owner notif fail", { err: String(e) }));
   }
 
+  // PPN breakdown (informational) — order.total tetap sumber kebenaran.
+  // Saat taxEnabled & mode INCLUSIVE, total dianggap sudah termasuk PPN.
+  let tax: { base: number; tax: number; total: number; rate: number } | null = null;
+  if (tenant.taxEnabled) {
+    tax = calculatePpn(order.total, (tenant.taxMode as TaxMode) ?? "EXCLUSIVE", tenant.taxRate ?? 0.11);
+  }
+
   return NextResponse.json({
     success: true,
     orderId: order.id,
     orderNumber: order.orderNumber,
     total: order.total,
+    tax,
   });
 });
