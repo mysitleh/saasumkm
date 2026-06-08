@@ -13,6 +13,10 @@ const schema = z.object({
   phone: z.string().max(20).optional(),
   qrisImageUrl: z.string().url().optional().or(z.literal("")),
   themeColor: z.enum(["green", "blue", "purple", "orange", "rose", "slate"]).optional(),
+  // Tax / PPN settings
+  taxEnabled: z.boolean().optional(),
+  taxRate: z.number().min(0).max(1).optional(),  // 0..1 (e.g. 0.11 = 11%)
+  taxMode: z.enum(["EXCLUSIVE", "INCLUSIVE"]).optional(),
 });
 
 export const PUT = withErrorHandler(async (req: Request) => {
@@ -30,6 +34,9 @@ export const PUT = withErrorHandler(async (req: Request) => {
       phone: body.phone ? sanitizeText(body.phone, 20) : null,
       qrisImageUrl: body.qrisImageUrl || null,
       themeColor: body.themeColor ?? undefined,
+      taxEnabled: body.taxEnabled ?? undefined,
+      taxRate: body.taxRate ?? undefined,
+      taxMode: body.taxMode ?? undefined,
     },
   });
   return NextResponse.json({ success: true, tenant });

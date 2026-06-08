@@ -17,6 +17,9 @@ interface Tenant {
   phone: string | null;
   qrisImageUrl: string | null;
   themeColor: string | null;
+  taxEnabled?: boolean | null;
+  taxRate?: number | null;
+  taxMode?: string | null;
 }
 
 export default function SettingsForm({ tenant }: { tenant: Tenant }) {
@@ -32,6 +35,9 @@ export default function SettingsForm({ tenant }: { tenant: Tenant }) {
     phone: tenant.phone ?? "",
     qrisImageUrl: tenant.qrisImageUrl ?? "",
     themeColor: tenant.themeColor ?? "green",
+    taxEnabled: tenant.taxEnabled ?? false,
+    taxRate: tenant.taxRate ?? 0.11,
+    taxMode: tenant.taxMode ?? "EXCLUSIVE",
   });
 
   function update<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
@@ -142,6 +148,49 @@ export default function SettingsForm({ tenant }: { tenant: Tenant }) {
             </button>
           ))}
         </div>
+      </div>
+
+      <div className="bg-white rounded-[20px] p-4 shadow-sm space-y-4">
+        <h2 className="font-semibold text-[var(--ink)]">PPN / Pajak</h2>
+        <div className="bg-amber-50 border border-amber-200 rounded-[14px] p-3 text-sm text-amber-700">
+          Aktifkan untuk menampilkan rincian PPN di struk & invoice pelanggan. Tarif default 11% (UU HPP).
+        </div>
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={form.taxEnabled}
+            onChange={(e) => update("taxEnabled", e.target.checked)}
+            className="w-5 h-5 rounded accent-[var(--accent)]"
+          />
+          <span className="text-sm font-medium text-[var(--ink)]">Aktifkan PPN</span>
+        </label>
+        {form.taxEnabled && (
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-[var(--ink-muted)] mb-1">Tarif (%)</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                max="100"
+                value={Math.round(form.taxRate * 100)}
+                onChange={(e) => update("taxRate", Number(e.target.value) / 100)}
+                className="w-full border border-[var(--border-warm)] rounded-[14px] px-3 py-2.5 text-sm focus:outline-none focus:ring-[3px] focus:ring-[var(--accent)]/20 focus:border-[var(--accent)]"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[var(--ink-muted)] mb-1">Mode</label>
+              <select
+                value={form.taxMode}
+                onChange={(e) => update("taxMode", e.target.value)}
+                className="w-full border border-[var(--border-warm)] rounded-[14px] px-3 py-2.5 text-sm focus:outline-none focus:ring-[3px] focus:ring-[var(--accent)]/20 focus:border-[var(--accent)]"
+              >
+                <option value="EXCLUSIVE">Exclusive (PPN ditambahkan)</option>
+                <option value="INCLUSIVE">Inclusive (harga sudah termasuk PPN)</option>
+              </select>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="bg-white rounded-[20px] p-4 shadow-sm space-y-4">
