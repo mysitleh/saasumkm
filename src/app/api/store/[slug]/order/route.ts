@@ -77,9 +77,27 @@ export const POST = withErrorHandler<Ctx>(async (req, { params }) => {
       where: { id: data.promoId, tenantId: tenant.id, isActive: true },
     });
     if (promo && (!promo.expiresAt || promo.expiresAt > new Date()) && subtotal >= promo.minOrder) {
-      discountAmount = promo.type === "PERCENT" ? Math.floor((subtotal * promo.value) / 100) : promo.value;
-      if (promo.type === "PERCENT" && promo.maxDiscount) discountAmount = Math.min(discountAmount, promo.maxDiscount);
-      promoId = promo.id;
+      // Global usage limit: count all orders that already used this promo.
+      let allowed = true;
+      if (promo.usageLimit != null) {
+        const used = await prisma.order.count({ where: { promoId: promo.id } });
+        if (used >= promo.usageLimit) allowed = false;
+      }
+      // Per-customer limit: scope by phone (fallback to name when phone is empty).
+      if (allowed && promo.perCustomerLimit != null) {
+        const customerKey = data.customerPhone
+          ? { customerPhone: data.customerPhone }
+          : { customerName: data.customerName };
+        const usedByCustomer = await prisma.order.count({
+          where: { promoId: promo.id, ...customerKey },
+        });
+        if (usedByCustomer >= promo.perCustomerLimit) allowed = false;
+      }
+      if (allowed) {
+        discountAmount = promo.type === "PERCENT" ? Math.floor((subtotal * promo.value) / 100) : promo.value;
+        if (promo.type === "PERCENT" && promo.maxDiscount) discountAmount = Math.min(discountAmount, promo.maxDiscount);
+        promoId = promo.id;
+      }
     }
   }
   const total = Math.max(0, subtotal - discountAmount);

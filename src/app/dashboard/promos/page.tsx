@@ -14,6 +14,13 @@ export default async function PromosPage() {
   if (!session?.user.tenantId) redirect("/login");
   const tenantId = session.user.tenantId;
   const promos = await prisma.promo.findMany({ where: { tenantId }, orderBy: { createdAt: "desc" } });
+  // Hitung pemakaian per promo (count order yg pakai promoId).
+  const usageRows = await prisma.order.groupBy({
+    by: ["promoId"],
+    where: { tenantId, promoId: { not: null } },
+    _count: { _all: true },
+  });
+  const usageMap = new Map(usageRows.map((r) => [r.promoId, r._count._all]));
 
   return (
     <div className="page-shell">
@@ -70,6 +77,22 @@ export default async function PromosPage() {
                     {promo.minOrder > 0 && <> <span className="glyph">·</span> Min. order {formatRupiah(promo.minOrder)}</>}
                     {promo.maxDiscount && <> <span className="glyph">·</span> Maks. {formatRupiah(promo.maxDiscount)}</>}
                   </p>
+                  {(promo.usageLimit != null || promo.perCustomerLimit != null) && (
+                    <p className="micro tabular" style={{ color: "var(--shade-50)" }}>
+                      {(() => {
+                        const used = usageMap.get(promo.id) ?? 0;
+                        const parts: string[] = [];
+                        if (promo.usageLimit != null) {
+                          const remain = Math.max(0, promo.usageLimit - used);
+                          parts.push(`Kuota ${used}/${promo.usageLimit} (sisa ${remain})`);
+                        } else {
+                          parts.push(`Terpakai ${used}×`);
+                        }
+                        if (promo.perCustomerLimit != null) parts.push(`maks ${promo.perCustomerLimit}× per customer`);
+                        return parts.join(" · ");
+                      })()}
+                    </p>
+                  )}
                   {promo.expiresAt && (
                     <p className="micro tabular" style={{ color: "var(--shade-50)" }}>
                       Berlaku s/d {new Date(promo.expiresAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}

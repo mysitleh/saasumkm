@@ -10,6 +10,8 @@ const schema = z.object({
   value: z.number().int().min(1),
   minOrder: z.number().int().min(0).default(0),
   maxDiscount: z.number().int().min(0).nullable().optional(),
+  usageLimit: z.number().int().min(1).nullable().optional(),
+  perCustomerLimit: z.number().int().min(1).nullable().optional(),
   expiresAt: z.string().nullable().optional(),
 });
 
@@ -37,6 +39,8 @@ export const POST = withErrorHandler(async (req: Request) => {
       value: data.value,
       minOrder: data.minOrder,
       maxDiscount: data.maxDiscount ?? null,
+      usageLimit: data.usageLimit ?? null,
+      perCustomerLimit: data.perCustomerLimit ?? null,
       expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
     },
   });

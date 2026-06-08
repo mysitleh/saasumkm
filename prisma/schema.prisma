@@ -144,6 +144,8 @@ model Promo {
   value       Int
   minOrder    Int       @default(0)
   maxDiscount Int?
+  usageLimit       Int?
+  perCustomerLimit Int?
   isActive    Boolean   @default(true)
   expiresAt   DateTime?
   createdAt   DateTime  @default(now())
