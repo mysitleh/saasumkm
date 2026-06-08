@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { formatRupiah } from "@/lib/utils";
+import { calculatePpn, type TaxMode } from "@/lib/tax";
 import { ShoppingCart, Plus, Minus, Trash, CheckCircle, CircleNotch, ArrowLeft } from "@phosphor-icons/react";
 import Link from "next/link";
 import { GLYPH } from "@/lib/glyphs";
@@ -25,9 +26,12 @@ interface Props {
   categories: string[];
   tenantSlug: string;
   tenantName: string;
+  taxEnabled: boolean;
+  taxRate: number;
+  taxMode: TaxMode;
 }
 
-export default function PosClient({ products, categories, tenantSlug, tenantName }: Props) {
+export default function PosClient({ products, categories, tenantSlug, tenantName, taxEnabled, taxRate, taxMode }: Props) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCat, setSelectedCat] = useState("all");
   const [customerName, setCustomerName] = useState("Walk-in");
@@ -238,9 +242,22 @@ export default function PosClient({ products, categories, tenantSlug, tenantName
         </div>
 
         <div style={{ borderTop: "1px solid var(--hairline-light)", padding: 16 }}>
+          {taxEnabled && cart.length > 0 ? (() => {
+            const b = calculatePpn(total, taxMode, taxRate);
+            return (
+              <div className="mb-2" style={{ paddingBottom: 8, borderBottom: "1px dashed var(--hairline-light)" }}>
+                <div className="flex justify-between caption tabular" style={{ color: "var(--shade-50)" }}>
+                  <span>DPP</span><span>{formatRupiah(b.base)}</span>
+                </div>
+                <div className="flex justify-between caption tabular" style={{ color: "var(--shade-50)" }}>
+                  <span>PPN ({Math.round(taxRate * 100)}%)</span><span>{formatRupiah(b.tax)}</span>
+                </div>
+              </div>
+            );
+          })() : null}
           <div className="flex justify-between mb-3">
             <span className="body-strong">Total</span>
-            <span className="body-strong tabular">{formatRupiah(total)}</span>
+            <span className="body-strong tabular">{formatRupiah(taxEnabled && cart.length > 0 ? calculatePpn(total, taxMode, taxRate).total : total)}</span>
           </div>
           <button
             onClick={submitOrder}

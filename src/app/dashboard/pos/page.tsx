@@ -21,7 +21,7 @@ export default async function PosPage() {
     }),
     prisma.tenant.findUnique({
       where: { id: session.user.tenantId },
-      select: { slug: true, name: true },
+      select: { slug: true, name: true, taxEnabled: true, taxRate: true, taxMode: true },
     }),
   ]);
 
@@ -38,6 +38,9 @@ export default async function PosPage() {
       categories={categories.map((c) => c.name)}
       tenantSlug={tenant?.slug ?? ""}
       tenantName={tenant?.name ?? ""}
+      taxEnabled={tenant?.taxEnabled ?? false}
+      taxRate={tenant?.taxRate ?? 0.11}
+      taxMode={(tenant?.taxMode as "EXCLUSIVE" | "INCLUSIVE") ?? "EXCLUSIVE"}
     />
   );
 }
