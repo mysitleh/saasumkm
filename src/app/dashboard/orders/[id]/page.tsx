@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatRupiah, ORDER_STATUS_LABELS } from "@/lib/utils";
+import { calculatePpn } from "@/lib/tax";
 import { redirect, notFound } from "next/navigation";
 import OrderActions from "./OrderActions";
 import PrintReceipt from "./PrintReceipt";
@@ -14,7 +15,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   const { id } = await params;
   const order = await prisma.order.findFirst({
     where: { id, tenantId: session.user.tenantId },
-    include: { items: { include: { product: true } }, promo: true, tenant: { select: { slug: true, name: true, address: true } } },
+    include: { items: { include: { product: true } }, promo: true, tenant: { select: { slug: true, name: true, address: true, taxEnabled: true, taxRate: true, taxMode: true } } },
   });
   if (!order) notFound();
 
@@ -104,6 +105,19 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               <span>−{formatRupiah(order.discountAmount)}</span>
             </div>
           )}
+          {order.tenant.taxEnabled && (() => {
+            const b = calculatePpn(order.total, (order.tenant.taxMode as "EXCLUSIVE" | "INCLUSIVE") ?? "EXCLUSIVE", order.tenant.taxRate ?? 0.11);
+            return (
+              <>
+                <div className="flex justify-between" style={{ color: "var(--shade-60)" }}>
+                  <span>DPP</span><span>{formatRupiah(b.base)}</span>
+                </div>
+                <div className="flex justify-between" style={{ color: "var(--shade-60)" }}>
+                  <span>PPN ({Math.round((order.tenant.taxRate ?? 0.11) * 100)}%)</span><span>{formatRupiah(b.tax)}</span>
+                </div>
+              </>
+            );
+          })()}
           <div className="flex justify-between body-strong pt-2" style={{ borderTop: "1px solid var(--hairline-light)", marginTop: 4 }}>
             <span>Total</span><span>{formatRupiah(order.total)}</span>
           </div>
