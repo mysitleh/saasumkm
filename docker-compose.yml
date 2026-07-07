@@ -14,7 +14,7 @@ services:
     volumes:
       - saasumkm-data:/data
     command: >
-      sh -c "npx prisma db push --skip-generate --accept-data-loss && echo 'schema pushed'"
+      sh -c "npx prisma db push --accept-data-loss && chown -R 1001:1001 /data && echo 'schema pushed + chowned'"
 
   web:
     build:
