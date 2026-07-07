@@ -27,6 +27,8 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  // Standalone output → self-contained server.js for a slim Docker runtime.
+  output: "standalone",
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },

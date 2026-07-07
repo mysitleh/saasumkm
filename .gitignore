@@ -62,3 +62,9 @@ tests/e2e/.auth/
 
 # Large binary report exports (keep out of git)
 docs/*.docx
+
+# Allow the template (not real secrets)
+!.env.example
+
+# Separate WhatsApp agent sub-project (own node_modules + WA session creds — never track)
+wa-agent-umkm/
