@@ -56,6 +56,10 @@ export const POST = withErrorHandler(async (req: Request) => {
       });
       if (!payment) throw new Error("Payment record tidak ditemukan");
 
+      if (payment.orderId !== order.id || parsed.amount !== order.total || parsed.amount !== payment.amount) {
+        throw new Error("Payment reconciliation mismatch");
+      }
+
       if (parsed.status === "PAID" && order.status === "WAITING_PAYMENT") {
         await tx.payment.update({
           where: { id: payment.id },
@@ -94,6 +98,6 @@ export const POST = withErrorHandler(async (req: Request) => {
       data: { status: "FAILED", error: msg.slice(0, 500) },
     });
     logger.error("Webhook processing failed", { error: msg, provider: provider.name });
-    return NextResponse.json({ error: "Processing failed", message: msg }, { status: 500 });
+    return NextResponse.json({ error: "Processing failed" }, { status: 500 });
   }
 });

@@ -15,6 +15,10 @@ export const dynamic = "force-dynamic";
  */
 export const GET = withErrorHandler(async (req: Request) => {
   const cronSecret = process.env.CRON_SECRET;
+  if (process.env.NODE_ENV === "production" && !cronSecret) {
+    logger.error("Cron: CRON_SECRET is missing");
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+  }
   if (cronSecret) {
     const auth = req.headers.get("authorization");
     if (auth !== `Bearer ${cronSecret}`) {

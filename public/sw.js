@@ -1,7 +1,7 @@
 /// <reference lib="webworker" />
 
-const CACHE_NAME = "umkmstore-v1";
-const STATIC_ASSETS = ["/", "/login", "/register", "/manifest.webmanifest"];
+const CACHE_NAME = "umkmstore-v2";
+const STATIC_ASSETS = ["/", "/register", "/manifest.webmanifest"];
 
 // Install: cache static assets
 self.addEventListener("install", (event) => {
@@ -29,8 +29,14 @@ self.addEventListener("fetch", (event) => {
   // Skip non-GET
   if (request.method !== "GET") return;
 
-  // API calls: network only (don't cache dynamic data)
-  if (url.pathname.startsWith("/api/")) return;
+  // Private/dynamic pages are always network-only to prevent cross-account stale data.
+  if (
+    url.pathname.startsWith("/api/") ||
+    url.pathname.startsWith("/dashboard") ||
+    url.pathname.startsWith("/admin") ||
+    url.pathname.startsWith("/login") ||
+    url.pathname.startsWith("/order")
+  ) return;
 
   // Next.js internals: network first
   if (url.pathname.startsWith("/_next/")) {
@@ -44,7 +50,8 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(request)
       .then((response) => {
-        if (response.ok) {
+        const cacheControl = response.headers.get("cache-control") || "";
+        if (response.ok && !/private|no-store/i.test(cacheControl)) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
         }

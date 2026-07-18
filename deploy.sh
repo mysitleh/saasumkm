@@ -27,7 +27,12 @@ for i in $(seq 1 12); do
   [ "$CODE" = "200" ] && { echo "    health OK ($CODE)"; break; }
   echo "    waiting health... ($CODE) [$i/12]"; sleep 5
 done
-curl -s http://127.0.0.1:8093/api/health || true
+if [ "${CODE:-000}" != "200" ]; then
+  echo "FATAL: health check gagal setelah 12 percobaan."
+  docker compose logs --tail=100 web
+  exit 1
+fi
+curl -fsS http://127.0.0.1:8093/api/health
 echo ""
 echo "==> Selesai. Container:"
 docker compose ps --format 'table {{.Name}}\t{{.Status}}'

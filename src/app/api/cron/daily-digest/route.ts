@@ -19,6 +19,10 @@ export const maxDuration = 60;
  */
 export const GET = withErrorHandler(async (req: Request) => {
   const cronSecret = process.env.CRON_SECRET;
+  if (process.env.NODE_ENV === "production" && !cronSecret) {
+    logger.error("Cron: CRON_SECRET is missing");
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+  }
   if (cronSecret) {
     const auth = req.headers.get("authorization");
     if (auth !== `Bearer ${cronSecret}`) {
@@ -28,6 +32,9 @@ export const GET = withErrorHandler(async (req: Request) => {
 
   const url = new URL(req.url);
   const force = url.searchParams.get("force") === "1";
+  if (process.env.NODE_ENV === "production" && force) {
+    return NextResponse.json({ error: "Force mode is disabled" }, { status: 403 });
+  }
   const onlyTenant = url.searchParams.get("tenantId");
   const { dateKey, hour: nowHour } = jakartaNow();
   const targetHour = url.searchParams.get("hour") ? Number(url.searchParams.get("hour")) : nowHour;

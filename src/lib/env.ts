@@ -11,6 +11,7 @@ const envSchema = z.object({
 
   NEXTAUTH_SECRET: z.string().min(16, "NEXTAUTH_SECRET minimal 16 karakter"),
   NEXTAUTH_URL: z.string().url().optional(),
+  CRON_SECRET: z.string().min(24, "CRON_SECRET minimal 24 karakter").optional(),
 
   // Payment
   PAYMENT_PROVIDER: z.enum(["mock", "midtrans"]).default("mock"),

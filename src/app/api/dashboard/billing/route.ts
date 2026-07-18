@@ -38,6 +38,10 @@ export const POST = withErrorHandler(async (req: Request) => {
     return NextResponse.json({ success: true });
   }
 
+  if (process.env.NODE_ENV === "production") {
+    throw forbidden("Aktivasi paket hanya dapat dilakukan setelah pembayaran terverifikasi.");
+  }
+
   const plan: Plan = body.plan;
   await activatePlan(session.user.tenantId, plan);
   await prisma.auditLog.create({
